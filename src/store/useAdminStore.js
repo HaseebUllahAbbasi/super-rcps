@@ -25,12 +25,17 @@ const useAdminStore = create(
               Authorization: `Bearer ${token}`,
             },
           });
-
-          set({ admins: response.data, loading: false });
+          console.log(response?.data)
+          set({ admins: response?.data?.data?.admins, loading: false });
         } catch (error) {
           set({ error: error.response?.data?.message || 'Failed to fetch users', loading: false });
         }
       },
+      addAdminToStore:(admin)=>{
+        set((state) => ({
+          admins: [...state.admins, admin],
+        }));
+      }
     }),
     {
       name: 'users-storage', // Key for localStorage persistence

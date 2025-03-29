@@ -1,10 +1,10 @@
 "use client"
 
-import { Search, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { divisions } from "@/lib/mock-data"
+import { Search, UserPlus } from "lucide-react"
+import { SINDH_DISTRICTS, validAdminRoles } from "../constants"
 
 interface AdminFiltersProps {
   searchTerm: string
@@ -42,10 +42,9 @@ export default function AdminFilters({
           <SelectValue placeholder="Filter by role" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Roles</SelectItem>
-          <SelectItem value="admin">Admin</SelectItem>
-          <SelectItem value="divisional_head">Divisional Head</SelectItem>
-          <SelectItem value="super_admin">Super Admin</SelectItem>
+          {validAdminRoles.map(role => (
+            <SelectItem key={role} value={role}>{role}</SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
@@ -54,11 +53,8 @@ export default function AdminFilters({
           <SelectValue placeholder="Filter by division" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Divisions</SelectItem>
-          {divisions.map((division) => (
-            <SelectItem key={division} value={division}>
-              {division}
-            </SelectItem>
+          {SINDH_DISTRICTS.map((division) => (
+            <SelectItem key={division.id} value={division.id}>{division.name}</SelectItem>
           ))}
         </SelectContent>
       </Select>

@@ -1,5 +1,6 @@
 "use client"
 
+import { addNewAdmin } from "@/apis/auth-apis"
 import AddAdminDialog from "@/components/admin/add-admin-dialog"
 import AdminFilters from "@/components/admin/admin-filters"
 import AdminGridView from "@/components/admin/admin-grid-view"
@@ -9,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAdminStore } from "@/store/useAdminStore"
 import type { AdminUser, SortDirection, SortField } from "@/types"
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 
 export default function AdminManagement() {
@@ -26,12 +28,19 @@ export default function AdminManagement() {
   }, [fetchUsers]);
 
 
-  const handleAddAdmin = (data: any) => {
-    console.log(data)
+  const handleAddAdmin = async (data: any) => {
+    console.log(data);
+    const response = await addNewAdmin(data);
+    console.log(response)
+    if (response.error) {
+      return toast.error(response.error);
+    };
+    toast.success(response.data?.message || "Admin added successfully");
+    setIsAddDialogOpen(false)
   }
-
+  console.log(admins)
   // Filter admins based on search term and filters
-  const filteredAdmins = admins.filter((admin: AdminUser) => {
+  const filteredAdmins = admins?.filter((admin: AdminUser) => {
     const matchesSearch =
       admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||

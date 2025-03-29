@@ -1,5 +1,7 @@
 "use client";
 
+import { addNewAdmin } from "@/apis/auth-apis";
+import { TextInput } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,29 +11,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area"; // Import ScrollArea
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { addAdminSchema } from "@/schemas/user.schema";
 import { AdminUser } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import * as yup from "yup";
+import { toast } from "sonner";
 import { SINDH_DISTRICTS, USER_ROLES } from "../constants";
+import { useAdminStore } from "@/store/useAdminStore";
 
 const validAdminRoles = Object.values(USER_ROLES).filter(
   role => role !== USER_ROLES.CITIZEN && role !== USER_ROLES.SUPER_ADMIN
 );
-const validDivisions = SINDH_DISTRICTS.map(division => division.id);
 
-const schema = yup.object().shape({
-  name: yup.string().min(3).max(50).required("Name is required"),
-  email: yup.string().email("Invalid email").required("Email is required"),
-  phone: yup.string().min(10).max(20).required("Phone is required"),
-  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
-  role: yup.string().oneOf(validAdminRoles, "Invalid role").required("Role is required"),
-  division: yup.string().oneOf(validDivisions, "Invalid division").required("Division is required"),
-});
 
 interface AddAdminDialogProps {
   open: boolean;
@@ -39,17 +33,27 @@ interface AddAdminDialogProps {
   onAdd: (admin: AdminUser) => void;
 }
 
-export default function AddAdminDialog({ open, onOpenChange, onAdd }: AddAdminDialogProps) {
+export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogProps) {
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  } = useForm({ resolver: yupResolver(addAdminSchema) });
+  const { addAdminToStore } = useAdminStore()
 
-  const onSubmit = (data: any) => {
+  // handle add admin
+  const onSubmit = async (data: any) => {
     console.log(data);
-    onAdd(data);
+    const response = await addNewAdmin(data);
+    console.log(response)
+    if (response.error) {
+      return toast.error(response.error);
+    };
+    console.log(addAdminToStore)
+    addAdminToStore(response?.data?.admin)
+    toast.success(response.data?.message || "Admin added successfully");
+    onOpenChange(false)
   };
 
   return (
@@ -59,32 +63,16 @@ export default function AddAdminDialog({ open, onOpenChange, onAdd }: AddAdminDi
           <DialogTitle>Add New Administrator</DialogTitle>
           <DialogDescription>Create a new administrator account with specific roles and permissions.</DialogDescription>
         </DialogHeader>
-        
+
         {/* Scrollable Form Content */}
-        <ScrollArea className="max-h-[calc(100vh-140px)] p-4"> 
+        <ScrollArea className="max-h-[calc(100vh-140px)] p-4">
           <form onSubmit={handleSubmit(onSubmit)} className="p-2">
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="Enter full name" className="col-span-3" {...register("name")} />
-                <p className="text-red-500 text-sm col-span-4">{errors.name?.message}</p>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="Enter email" className="col-span-3" {...register("email")} />
-                <p className="text-red-500 text-sm col-span-4">{errors.email?.message}</p>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" placeholder="Enter phone number" className="col-span-3" {...register("phone")} />
-                <p className="text-red-500 text-sm col-span-4">{errors.phone?.message}</p>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="Enter password" className="col-span-3" {...register("password")} />
-                <p className="text-red-500 text-sm col-span-4">{errors.password?.message}</p>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
+              <TextInput id="name" error={errors.name?.message || ""} label={"Name"} {...register("name")} />
+              <TextInput id="email" error={errors.email?.message || ""} label={"Email"} {...register("email")} />
+              <TextInput id="phone" error={errors.phone?.message || ""} label={"Phone Number"} {...register("phone")} />
+              <TextInput type="password" id="password" error={errors.password?.message || ""} label={"Password"} {...register("password")} />
+              <div className="items-center gap-4">
                 <Label htmlFor="role">Role</Label>
                 <Select onValueChange={(value) => setValue("role", value)}>
                   <SelectTrigger className="col-span-3 w-full">
@@ -98,7 +86,7 @@ export default function AddAdminDialog({ open, onOpenChange, onAdd }: AddAdminDi
                 </Select>
                 <p className="text-red-500 text-sm col-span-4">{errors.role?.message}</p>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="items-center gap-4">
                 <Label htmlFor="division">Division</Label>
                 <Select onValueChange={(value) => setValue("division", value)}>
                   <SelectTrigger className="col-span-3 w-full">
