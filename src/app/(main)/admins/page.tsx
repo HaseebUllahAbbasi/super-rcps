@@ -1,0 +1,166 @@
+"use client"
+
+import { useState } from "react"
+import type { AdminUser, DivisionType, RoleType, SortDirection, SortField } from "@/types"
+import { mockAdmins } from "@/lib/mock-data"
+import AdminHeader from "@/components/admin/admin-header"
+import AdminFilters from "@/components/admin/admin-filters"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import AdminListView from "@/components/admin/admin-list-view"
+import AdminGridView from "@/components/admin/admin-grid-view"
+import AddAdminDialog from "@/components/admin/add-admin-dialog"
+
+// Mock divisions data
+const divisions: DivisionType[] = ["North", "South", "East", "West", "Central"]
+
+export default function AdminManagement() {
+  const [admins, setAdmins] = useState<AdminUser[]>(mockAdmins)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [roleFilter, setRoleFilter] = useState<string>("all")
+  const [divisionFilter, setDivisionFilter] = useState<string>("all")
+  const [sortField, setSortField] = useState<SortField>("name")
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+
+  // Filter admins based on search term and filters
+  const filteredAdmins = admins.filter((admin) => {
+    const matchesSearch =
+      admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin.phone.includes(searchTerm)
+
+    const matchesRole = roleFilter === "all" || admin.role === roleFilter
+    const matchesDivision = divisionFilter === "all" || admin.division === divisionFilter
+
+    return matchesSearch && matchesRole && matchesDivision
+  })
+
+  // Sort admins based on sort field and direction
+  const sortedAdmins = [...filteredAdmins].sort((a, b) => {
+    const aValue = a[sortField] || ""
+    const bValue = b[sortField] || ""
+
+    // Handle special case for dates
+    if (sortField === "createdAt") {
+      return sortDirection === "asc"
+        ? new Date(aValue).getTime() - new Date(bValue).getTime()
+        : new Date(bValue).getTime() - new Date(aValue).getTime()
+    }
+
+    // Handle string comparison
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+    }
+
+    // Fallback for other types
+    return sortDirection === "asc" ? (aValue > bValue ? 1 : -1) : bValue > aValue ? 1 : -1
+  })
+
+  // Handle sorting when a header is clicked
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+    } else {
+      // Set new field and default to ascending
+      setSortField(field)
+      setSortDirection("asc")
+    }
+  }
+
+  // Handle adding a new admin
+  const handleAddAdmin = (newAdmin: Partial<AdminUser>) => {
+    const id = Math.max(...admins.map((admin) => admin.id), 0) + 1
+    const createdAt = new Date().toISOString()
+
+    // Create a new admin with required fields
+    const adminToAdd: AdminUser = {
+      id,
+      name: newAdmin.name || "",
+      email: newAdmin.email || "",
+      phone: newAdmin.phone || "",
+      role: newAdmin.role || "admin",
+      division: newAdmin.division,
+      notificationPreference: newAdmin.notificationPreference || "app",
+      createdAt,
+    }
+
+    setAdmins([...admins, adminToAdd])
+    setIsAddDialogOpen(false)
+  }
+
+  // Handle editing an admin
+  const handleEditAdmin = (updatedAdmin: AdminUser) => {
+    setAdmins(admins.map((admin) => (admin.id === updatedAdmin.id ? updatedAdmin : admin)))
+  }
+
+  // Handle deleting an admin
+  const handleDeleteAdmin = (id: number) => {
+    setAdmins(admins.filter((admin) => admin.id !== id))
+  }
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(date)
+  }
+
+  // Get badge color based on role
+  const getRoleBadgeColor = (role: RoleType) => {
+    switch (role) {
+      case "super_admin":
+        return "bg-red-100 text-red-800 hover:bg-red-100"
+      case "divisional_head":
+        return "bg-blue-100 text-blue-800 hover:bg-blue-100"
+      case "admin":
+        return "bg-green-100 text-green-800 hover:bg-green-100"
+      default:
+        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+    }
+  }
+
+  return (
+    <div className="container mx-auto py-8 px-4">
+      <Tabs defaultValue="list" className="w-full">
+        <AdminHeader>
+          <TabsList>
+            <TabsTrigger value="list">List View</TabsTrigger>
+            <TabsTrigger value="grid">Grid View</TabsTrigger>
+          </TabsList>
+        </AdminHeader>
+
+        <AdminFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          roleFilter={roleFilter}
+          setRoleFilter={setRoleFilter}
+          divisionFilter={divisionFilter}
+          setDivisionFilter={setDivisionFilter}
+          onAddClick={() => setIsAddDialogOpen(true)}
+        />
+
+        <TabsContent value="list" className="space-y-4">
+          <AdminListView
+            admins={sortedAdmins}
+            onEdit={handleEditAdmin}
+            onDelete={handleDeleteAdmin}
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+          />
+        </TabsContent>
+
+        <TabsContent value="grid" className="space-y-4">
+          <AdminGridView admins={sortedAdmins} onEdit={handleEditAdmin} onDelete={handleDeleteAdmin} />
+        </TabsContent>
+      </Tabs>
+
+      <AddAdminDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} onAdd={handleAddAdmin} />
+    </div>
+  )
+}
+
