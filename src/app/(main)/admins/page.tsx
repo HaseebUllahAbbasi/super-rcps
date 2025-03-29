@@ -7,7 +7,7 @@ import AdminHeader from "@/components/admin/admin-header"
 import AdminListView from "@/components/admin/admin-list-view"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { mockAdmins } from "@/lib/mock-data"
-import type { AdminUser, DivisionType, SortDirection, SortField } from "@/types"
+import type { AdminUser, SortDirection, SortField } from "@/types"
 import { useState } from "react"
 
 
