@@ -1,17 +1,18 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { login } from "@/action/auth"
+import useAuthStore from "@/store/authStore"
+import { loginAdmin } from "../apis/auth-apis"
 
 // Define validation schema using Zod
 const loginSchema = z.object({
@@ -25,7 +26,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
-  const router = useRouter()
+  const router = useRouter();
+  const { login } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -42,26 +44,20 @@ export function LoginForm() {
     },
   })
 
-  const onSubmit = async (data: LoginFormValues) => {
+  const onSubmit = async (data: LoginFormValues, event: any) => {
+    event.preventDefault()
     setIsLoading(true)
     setError(null)
-
-    try {
-      const result = await login(data)
-
-      if (result.success) {
-        router.push("/dashboard")
-      } else {
-        setError(result.error || "Authentication failed")
-      }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.")
-      console.error(err)
-    } finally {
-      setIsLoading(false)
+    const result = await loginAdmin(data)
+    setIsLoading(false)
+    if (result.data) {
+      router.push("/dashboard");
+      login();
+      return;
     }
+    setError(result.error || "An unexpected error occurred. Please try again.")
+    console.error(result.error)
   }
-
   return (
     <Card className="w-full">
       <form onSubmit={handleSubmit(onSubmit)}>

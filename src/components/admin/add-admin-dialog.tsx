@@ -1,8 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { divisions } from "@/lib/mock-data"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,40 +8,48 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { AdminUser, NewAdminUser, NotificationPreferenceType, RoleType } from "@/types"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AdminUser } from "@/types";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { SINDH_DISTRICTS, USER_ROLES } from "../constants";
+
+const validAdminRoles = Object.values(USER_ROLES).filter(
+  role => role !== USER_ROLES.CITIZEN && role !== USER_ROLES.SUPER_ADMIN
+);
+const validDivisions = SINDH_DISTRICTS.map(division => division.id);
+
+const schema = yup.object().shape({
+  name: yup.string().min(3).max(50).required("Name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  phone: yup.string().min(10).max(20).required("Phone is required"),
+  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  role: yup.string().oneOf(validAdminRoles, "Invalid role").required("Role is required"),
+  division: yup.string().oneOf(validDivisions, "Invalid division").required("Division is required"),
+});
 
 interface AddAdminDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onAdd: (admin: Partial<AdminUser>) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onAdd: (admin: AdminUser) => void;
 }
 
 export default function AddAdminDialog({ open, onOpenChange, onAdd }: AddAdminDialogProps) {
-  const [newAdmin, setNewAdmin] = useState<Partial<NewAdminUser>>({
-    name: "",
-    email: "",
-    phone: "",
-    role: "admin",
-    division: "",
-    notificationPreference: "app",
-  })
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
 
-  const handleSubmit = () => {
-    onAdd(newAdmin)
-    // Reset form
-    setNewAdmin({
-      name: "",
-      email: "",
-      phone: "",
-      role: "admin",
-      division: "",
-      notificationPreference: "app",
-    })
-  }
+  const onSubmit = (data: any) => {
+    console.log(data)
+    onAdd(data);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -52,109 +58,65 @@ export default function AddAdminDialog({ open, onOpenChange, onAdd }: AddAdminDi
           <DialogTitle>Add New Administrator</DialogTitle>
           <DialogDescription>Create a new administrator account with specific roles and permissions.</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              value={newAdmin.name || ""}
-              onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
-              className="col-span-3"
-            />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" placeholder="Enter full name" {...register("name")} />
+              <p className="text-red-500 text-sm">{errors.name?.message}</p>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="Enter email" {...register("email")} />
+              <p className="text-red-500 text-sm">{errors.email?.message}</p>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="phone">Phone</Label>
+              <Input id="phone" placeholder="Enter phone number" {...register("phone")} />
+              <p className="text-red-500 text-sm">{errors.phone?.message}</p>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" placeholder="Enter password" {...register("password")} />
+              <p className="text-red-500 text-sm">{errors.password?.message}</p>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="role">Role</Label>
+              <Select onValueChange={(value) => setValue("role", value)}>
+                <SelectTrigger className="col-span-3 w-full">
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {validAdminRoles.map(role => (
+                    <SelectItem key={role} value={role}>{role}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-red-500 text-sm">{errors.role?.message}</p>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="division">Division</Label>
+              <Select onValueChange={(value) => setValue("division", value)}>
+                <SelectTrigger className="col-span-3 w-full">
+                  <SelectValue placeholder="Select division" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SINDH_DISTRICTS.map((division) => (
+                    <SelectItem key={division.id} value={division.id}>{division.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-red-500 text-sm">{errors.division?.message}</p>
+            </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={newAdmin.email || ""}
-              onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="phone" className="text-right">
-              Phone
-            </Label>
-            <Input
-              id="phone"
-              value={newAdmin.phone || ""}
-              onChange={(e) => setNewAdmin({ ...newAdmin, phone: e.target.value })}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="role" className="text-right">
-              Role
-            </Label>
-            <Select
-              value={newAdmin.role || "admin"}
-              onValueChange={(value) => setNewAdmin({ ...newAdmin, role: value as RoleType })}
-            >
-              <SelectTrigger className="col-span-3 w-full">
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="divisional_head">Divisional Head</SelectItem>
-                <SelectItem value="super_admin">Super Admin</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="division" className="text-right">
-              Division
-            </Label>
-            <Select
-              value={newAdmin.division || ""}
-              onValueChange={(value) => setNewAdmin({ ...newAdmin, division: value })}
-            >
-              <SelectTrigger className="col-span-3 w-full">
-                <SelectValue placeholder="Select division" />
-              </SelectTrigger>
-              <SelectContent>
-                {divisions.map((division) => (
-                  <SelectItem key={division} value={division}>
-                    {division}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="notification" className="text-right">
-              Notification
-            </Label>
-            <Select
-              value={newAdmin.notificationPreference || "app"}
-              onValueChange={(value) =>
-                setNewAdmin({ ...newAdmin, notificationPreference: value as NotificationPreferenceType })
-              }
-            >
-              <SelectTrigger className="col-span-3 w-full">
-                <SelectValue placeholder="Select notification preference" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="app">App</SelectItem>
-                <SelectItem value="sms">SMS</SelectItem>
-                <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                <SelectItem value="email">Email</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit}>Add Administrator</Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit">Add Administrator</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

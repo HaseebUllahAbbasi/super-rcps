@@ -6,22 +6,32 @@ import AdminGridView from "@/components/admin/admin-grid-view"
 import AdminHeader from "@/components/admin/admin-header"
 import AdminListView from "@/components/admin/admin-list-view"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { mockAdmins } from "@/lib/mock-data"
+import { useAdminStore } from "@/store/useAdminStore"
 import type { AdminUser, SortDirection, SortField } from "@/types"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 export default function AdminManagement() {
-  const [admins, setAdmins] = useState<AdminUser[]>(mockAdmins)
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [divisionFilter, setDivisionFilter] = useState<string>("all")
   const [sortField, setSortField] = useState<SortField>("name")
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const { fetchUsers, admins } = useAdminStore()
+
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+
+  const handleAddAdmin = (data: any) => {
+    console.log(data)
+  }
 
   // Filter admins based on search term and filters
-  const filteredAdmins = admins.filter((admin) => {
+  const filteredAdmins = admins.filter((admin: AdminUser) => {
     const matchesSearch =
       admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -66,35 +76,15 @@ export default function AdminManagement() {
     }
   }
 
-  // Handle adding a new admin
-  const handleAddAdmin = (newAdmin: Partial<AdminUser>) => {
-    const id = Math.max(...admins.map((admin) => admin.id), 0) + 1
-    const createdAt = new Date().toISOString()
-
-    // Create a new admin with required fields
-    const adminToAdd: AdminUser = {
-      id,
-      name: newAdmin.name || "",
-      email: newAdmin.email || "",
-      phone: newAdmin.phone || "",
-      role: newAdmin.role || "admin",
-      division: newAdmin.division,
-      notificationPreference: newAdmin.notificationPreference || "app",
-      createdAt,
-    }
-
-    setAdmins([...admins, adminToAdd])
-    setIsAddDialogOpen(false)
-  }
 
   // Handle editing an admin
   const handleEditAdmin = (updatedAdmin: AdminUser) => {
-    setAdmins(admins.map((admin) => (admin.id === updatedAdmin.id ? updatedAdmin : admin)))
+    console.log(updatedAdmin)
   }
 
   // Handle deleting an admin
   const handleDeleteAdmin = (id: number) => {
-    setAdmins(admins.filter((admin) => admin.id !== id))
+    console.log(id)
   }
 
 
