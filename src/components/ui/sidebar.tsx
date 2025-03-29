@@ -24,6 +24,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { usePathname } from "next/navigation"
+import { ModeToggle } from "../toggle-theme"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -253,15 +255,23 @@ function Sidebar({
   )
 }
 
+const formatPathname = (pathname: string) => {
+  return pathname
+    .replace(/[/\-_]/g, ' ') // Replace /, -, _ with space
+    .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
+};
+
 function SidebarTrigger({
   className,
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar()
+  const pathname = usePathname()
 
   return (
-    <Button
+    <div className="flex justify-between gap-2 p-4 py-2 items-center ">
+      <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
@@ -275,7 +285,15 @@ function SidebarTrigger({
     >
       <PanelLeftIcon />
       <span className="sr-only">Toggle Sidebar</span>
+   
+      
     </Button>
+      <div className="text-sm w-full font-bold">
+      {formatPathname(pathname)}
+      </div>
+      <ModeToggle />
+    </div>
+
   )
 }
 

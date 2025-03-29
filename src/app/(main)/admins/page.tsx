@@ -99,29 +99,6 @@ export default function AdminManagement() {
     setAdmins(admins.filter((admin) => admin.id !== id))
   }
 
-  // Format date for display
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date)
-  }
-
-  // Get badge color based on role
-  const getRoleBadgeColor = (role: RoleType) => {
-    switch (role) {
-      case "super_admin":
-        return "bg-red-100 text-red-800 hover:bg-red-100"
-      case "divisional_head":
-        return "bg-blue-100 text-blue-800 hover:bg-blue-100"
-      case "admin":
-        return "bg-green-100 text-green-800 hover:bg-green-100"
-      default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
-    }
-  }
 
   return (
     <div className="container mx-auto py-8 px-4">
