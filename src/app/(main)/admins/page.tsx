@@ -1,17 +1,15 @@
 "use client"
 
-import { useState } from "react"
-import type { AdminUser, DivisionType, RoleType, SortDirection, SortField } from "@/types"
-import { mockAdmins } from "@/lib/mock-data"
-import AdminHeader from "@/components/admin/admin-header"
-import AdminFilters from "@/components/admin/admin-filters"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import AdminListView from "@/components/admin/admin-list-view"
-import AdminGridView from "@/components/admin/admin-grid-view"
 import AddAdminDialog from "@/components/admin/add-admin-dialog"
+import AdminFilters from "@/components/admin/admin-filters"
+import AdminGridView from "@/components/admin/admin-grid-view"
+import AdminHeader from "@/components/admin/admin-header"
+import AdminListView from "@/components/admin/admin-list-view"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { mockAdmins } from "@/lib/mock-data"
+import type { AdminUser, DivisionType, SortDirection, SortField } from "@/types"
+import { useState } from "react"
 
-// Mock divisions data
-const divisions: DivisionType[] = ["North", "South", "East", "West", "Central"]
 
 export default function AdminManagement() {
   const [admins, setAdmins] = useState<AdminUser[]>(mockAdmins)
