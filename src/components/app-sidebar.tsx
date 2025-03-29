@@ -14,6 +14,7 @@ import {
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
+import Link from "next/link"
 
 
 // Menu items with appropriate icons.
@@ -70,7 +71,7 @@ export function AppSidebar() {
               {items.map((item, index) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className={cn
+                    <Link href={item.url} className={cn
                       (
                     item.url == pathname && "text-primary font-extrabold hover:!text-primary",
 
@@ -78,7 +79,7 @@ export function AppSidebar() {
                     }>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

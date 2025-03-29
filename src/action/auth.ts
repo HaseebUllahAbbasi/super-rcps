@@ -1,5 +1,6 @@
 "use server";
 
+import { loginAdmin } from "@/apis/auth-apis";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -29,23 +30,32 @@ export async function login(data: LoginData) {
     const { email, password } = data;
 
     // Simulate authentication delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const {data: response,error} =  await loginAdmin(data) 
 
-    // Example validation (replace with actual authentication logic)
-    // For demo purposes, we'll accept any email with password "Password123!"
-    const isValidCredentials = password === "Password123!";
-
-    if (!isValidCredentials) {
+    
+    if (error) {
       return {
         success: false,
-        error: "Invalid email or password",
+        error: error,
       };
     }
+    
+    console.log(response)
+    
+    if (!response?.success) {
+      return {
+        success: false,
+        error: response?.message,
+      };
+      
+    }
+    
+   
 
     // Set authentication cookie (in a real app, use a secure JWT or session)
     const cookiesStore = await cookies();
     const oneDay = 24 * 60 * 60 * 1000;
-    cookiesStore.set("auth-token", "example-secure-token", {
+    cookiesStore.set("auth-token", response?.data?.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: oneDay,
@@ -54,10 +64,8 @@ export async function login(data: LoginData) {
 
     return {
       success: true,
-      user: {
-        email,
-        // Include other user data as needed
-      },
+      data: response?.data,
+     statusCode: response?.statusCode
     };
   } catch (error) {
     console.error("Login error:", error);

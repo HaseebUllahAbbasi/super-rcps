@@ -35,9 +35,9 @@ export default function LogoutLoading() {
           width={300}
           height={120}
         />
-        <Card className="w-full   border shadow-none border-none ">
+        <Card className="w-full   border shadow-none bg-transparent border-none ">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-gray-900">
+            <CardTitle className="text-2xl text-foreground">
               Logging Out
             </CardTitle>
             <CardDescription className="text-gray-600">

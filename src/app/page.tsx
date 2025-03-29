@@ -7,7 +7,7 @@ export default function LoginPage() {
       <Image src={"/logo.png"} alt="Logo" width={200} height={200} />
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Sign in to your account</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Sign in to your account</h1>
           <p className="mt-2 text-sm text-gray-600">Enter your credentials below to access your account</p>
         </div>
         <LoginForm />
