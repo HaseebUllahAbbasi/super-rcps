@@ -38,7 +38,7 @@ export default function EditAdminDialog({ admin, open, onOpenChange,  }: EditAdm
     resolver: yupResolver(addAdminSchema),
     defaultValues: { ...admin }
   });
-  const { addAdminToStore, divisions, updateAdmin } = useAdminStore();
+  const {  divisions, updateAdmin } = useAdminStore();
   const [loading, setLoading] = useState(false)
 
   // Update local state when admin prop changes

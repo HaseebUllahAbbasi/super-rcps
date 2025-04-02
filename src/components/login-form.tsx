@@ -7,13 +7,12 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import { login } from "@/action/auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import useAuthStore from "@/store/authStore"
-import { loginAdmin } from "../apis/auth-apis"
-import { login } from "@/action/auth"
 
 // Define validation schema using Zod
 const loginSchema = z.object({

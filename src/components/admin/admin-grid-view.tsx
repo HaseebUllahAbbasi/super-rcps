@@ -27,7 +27,7 @@ interface AdminGridViewProps {
   onDelete: (id: number) => void
 }
 
-export default function AdminGridView({ admins, onEdit, onDelete }: AdminGridViewProps) {
+export default function AdminGridView({ admins,  onDelete }: AdminGridViewProps) {
   const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isPasswordChangeDialogOpen, setIsPasswordChangeDialogOpen] = useState(false)

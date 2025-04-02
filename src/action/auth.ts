@@ -25,10 +25,7 @@ export async function login(data: LoginData) {
   }
 
   try {
-    // In a real application, you would verify credentials against a database
-    // This is a simplified example for demonstration purposes
-    const { email, password } = data;
-
+  
     // Simulate authentication delay
     const {data: response,error} =  await loginAdmin(data) 
 
