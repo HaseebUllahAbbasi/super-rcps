@@ -38,6 +38,14 @@ const useAdminStore = create(
           admins: [...state.admins, admin],
         }));
       },
+      updateAdmin: (updatedAdmin) => {
+        set((state) => ({
+          admins: state.admins.map((admin) =>
+            admin?.id === updatedAdmin?.id ? updatedAdmin : admin
+          ),
+        }));
+      },
+      
        updateStatus: (updatedStatus) => {
         set((state) => ({
           statuses: state.statuses.map((status) =>

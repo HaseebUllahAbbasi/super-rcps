@@ -15,6 +15,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AdminUser, NotificationPreferenceType, RoleType } from "@/types"
+import { ScrollArea } from "../ui/scroll-area"
+import { TextInput } from "../TextField"
+import { addAdminSchema } from "@/schemas/user.schema"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useForm } from "react-hook-form"
+import { useAdminStore } from "@/store/useAdminStore"
+import { addNewAdmin, editAdmin } from "@/apis/auth-apis"
+import { toast } from "sonner"
+import { validAdminRoles } from "../constants"
 
 interface EditAdminDialogProps {
   admin: AdminUser
@@ -24,17 +33,44 @@ interface EditAdminDialogProps {
 }
 
 export default function EditAdminDialog({ admin, open, onOpenChange, onSave }: EditAdminDialogProps) {
-  const [editedAdmin, setEditedAdmin] = useState<AdminUser>(admin)
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(addAdminSchema),
+    defaultValues: { ...admin }
+  });
+  const { addAdminToStore, divisions, updateAdmin } = useAdminStore();
+  const [loading, setLoading] = useState(false)
 
   // Update local state when admin prop changes
-  useEffect(() => {
-    setEditedAdmin(admin)
-  }, [admin])
-
-  const handleSubmit = () => {
-    onSave(editedAdmin)
+  const onSubmit = async (data: any) => {
+    console.log(data);
+    setLoading(true)
+    const response = await editAdmin({
+      "adminId": data?.id,
+      "name": data?.name,
+      "email": data?.email,
+      "phone": data?.phone,
+      "division": data?.division,
+    });
+    setLoading(false)
+    console.log(response)
+    if (response.error) {
+      return toast.error(response.error);
+    };
+    // console.log(addAdminToStore)
+    // const updatedAdmin = await 
+    // addAdminToStore(response?.data?.admin)
+    toast.success(response.data?.message || "Admin Updated successfully");
+    console.log("data is", response?.data)
+    updateAdmin(response?.data)
     onOpenChange(false)
-  }
+  };
+
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -43,107 +79,35 @@ export default function EditAdminDialog({ admin, open, onOpenChange, onSave }: E
           <DialogTitle>Edit Administrator</DialogTitle>
           <DialogDescription>Update administrator details and permissions.</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="edit-name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="edit-name"
-              value={editedAdmin.name}
-              onChange={(e) => setEditedAdmin({ ...editedAdmin, name: e.target.value })}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="edit-email" className="text-right">
-              Email
-            </Label>
-            <Input
-              id="edit-email"
-              type="email"
-              value={editedAdmin.email}
-              onChange={(e) => setEditedAdmin({ ...editedAdmin, email: e.target.value })}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="edit-phone" className="text-right">
-              Phone
-            </Label>
-            <Input
-              id="edit-phone"
-              value={editedAdmin.phone}
-              onChange={(e) => setEditedAdmin({ ...editedAdmin, phone: e.target.value })}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="edit-role" className="text-right">
-              Role
-            </Label>
-            <Select
-              value={editedAdmin.role}
-              onValueChange={(value) => setEditedAdmin({ ...editedAdmin, role: value as RoleType })}
-            >
-              <SelectTrigger className="col-span-3 w-full">
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="divisional_head">Divisional Head</SelectItem>
-                <SelectItem value="super_admin">Super Admin</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="edit-division" className="text-right">
-              Division
-            </Label>
-            <Select
-              value={editedAdmin.division || ""}
-              onValueChange={(value) => setEditedAdmin({ ...editedAdmin, division: value })}
-            >
-              <SelectTrigger className="col-span-3 w-full">
-                <SelectValue placeholder="Select division" />
-              </SelectTrigger>
-              <SelectContent>
-                {divisions.map((division) => (
-                  <SelectItem key={division} value={division}>
-                    {division}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="edit-notification" className="text-right">
-              Notification
-            </Label>
-            <Select
-              value={editedAdmin.notificationPreference}
-              onValueChange={(value) =>
-                setEditedAdmin({ ...editedAdmin, notificationPreference: value as NotificationPreferenceType })
-              }
-            >
-              <SelectTrigger className="col-span-3 w-full">
-                <SelectValue placeholder="Select notification preference" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="app">App</SelectItem>
-                <SelectItem value="sms">SMS</SelectItem>
-                <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                <SelectItem value="email">Email</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit}>Save Changes</Button>
-        </DialogFooter>
+        <ScrollArea className="max-h-[calc(100vh-140px)] ">
+          <form onSubmit={handleSubmit(onSubmit)} className="p-2">
+            <div className="grid gap-4 py-4">
+              <TextInput id="name" error={errors.name?.message || ""} label={"Name"} {...register("name")} />
+              <TextInput id="email" error={errors.email?.message || ""} label={"Email"} {...register("email")} />
+              <TextInput id="phone" error={errors.phone?.message || ""} label={"Phone Number"} {...register("phone")} />
+              <div className="items-center gap-4">
+                <Label htmlFor="division">Division</Label>
+                <Select defaultValue={admin?.division} onValueChange={(value) => setValue("division", value)}>
+                  <SelectTrigger className="col-span-3 w-full">
+                    <SelectValue placeholder="Select division" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {divisions.map((division: any) => (
+                      <SelectItem key={division.id} value={division.originalName}>{division.divisionLabel}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-red-500 text-sm col-span-4">{errors.division?.message}</p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button loading={loading} type="submit">Update Administrator</Button>
+            </DialogFooter>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )

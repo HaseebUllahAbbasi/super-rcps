@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { ArrowDown, ArrowUp, MoreHorizontal, Edit, Trash2 } from "lucide-react"
+import { ArrowDown, ArrowUp, MoreHorizontal, Edit, Trash2, Key } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -30,10 +30,12 @@ import {
 import EditAdminDialog from "./edit-admin-dialog"
 import { AdminUser, SortDirection, SortField } from "@/types"
 import { formatDate, getRoleBadgeColor } from "@/lib/utils"
+import ChangePasswordDialog from "./change-password-dialog"
 
 interface AdminListViewProps {
   admins: AdminUser[]
   onEdit: (admin: AdminUser) => void
+  onPassowrdChange: (admin: AdminUser) => void
   onDelete: (id: number) => void
   sortField: SortField
   sortDirection: SortDirection
@@ -43,6 +45,7 @@ interface AdminListViewProps {
 export default function AdminListView({
   admins,
   onEdit,
+  onPassowrdChange,
   onDelete,
   sortField,
   sortDirection,
@@ -50,6 +53,7 @@ export default function AdminListView({
 }: AdminListViewProps) {
   const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isPasswordChangeDialogOpen, setIsPasswordChangeDialogOpen] = useState(false)
 
   // Render sort indicator
   const renderSortIndicator = (field: SortField) => {
@@ -124,6 +128,15 @@ export default function AdminListView({
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setCurrentAdmin(admin)
+                            setIsPasswordChangeDialogOpen(true)
+                          }}
+                        >
+                          <Key className="mr-2 h-4 w-4" />
+                          Change Password
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -143,8 +156,8 @@ export default function AdminListView({
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
+                                className="bg-destructive hover:bg-destructive/90"
                                 onClick={() => onDelete(admin.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Delete
                               </AlertDialogAction>
@@ -171,6 +184,18 @@ export default function AdminListView({
           }}
           onSave={onEdit}
         />
+
+      )}
+      {currentAdmin && (
+        <ChangePasswordDialog
+          admin={currentAdmin}
+          open={isPasswordChangeDialogOpen}
+          onOpenChange={(open) => {
+            setIsPasswordChangeDialogOpen(open)
+            if (!open) setCurrentAdmin(null)
+          }}
+        />
+
       )}
     </Card>
   )

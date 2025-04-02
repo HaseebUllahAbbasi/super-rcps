@@ -21,4 +21,19 @@ export const addAdminSchema = yup.object().shape({
   division: yup.string().oneOf(validDivisions, "Invalid division").required("Division is required"),
 });
 
+export const updateAdminSchema = yup.object().shape({
+  id: yup.number().required("ID is required"),
+  name: yup.string().min(3).max(50).required("Name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  phone: yup.string().min(10).max(20).required("Phone is required"),
+  role: yup.string().oneOf(validAdminRoles, "Invalid role").required("Role is required"),
+  division: yup.string().oneOf(validDivisions, "Invalid division").required("Division is required"),
+});
+
+
+export const changePasswordSchema = yup.object().shape({
+  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  confirmPassword: yup.string().oneOf([yup.ref("password"), undefined], "Passwords do not match").required("Confirm Password is required"),
+});
+
 export { loginSchema }
