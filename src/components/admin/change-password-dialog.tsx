@@ -25,7 +25,6 @@ interface ChangePasswordDialogProps {
   admin: AdminUser
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave: (data: { password: string; confirmPassword: string }) => void
 }
 
 export default function ChangePasswordDialog({ admin, open, onOpenChange,  }: ChangePasswordDialogProps) {

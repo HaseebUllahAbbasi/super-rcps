@@ -34,8 +34,6 @@ import ChangePasswordDialog from "./change-password-dialog"
 
 interface AdminListViewProps {
   admins: AdminUser[]
-  onEdit: (admin: AdminUser) => void
-  onPassowrdChange: (admin: AdminUser) => void
   onDelete: (id: number) => void
   sortField: SortField
   sortDirection: SortDirection
@@ -44,8 +42,6 @@ interface AdminListViewProps {
 
 export default function AdminListView({
   admins,
-  onEdit,
-  onPassowrdChange,
   onDelete,
   sortField,
   sortDirection,
@@ -182,7 +178,6 @@ export default function AdminListView({
             setIsEditDialogOpen(open)
             if (!open) setCurrentAdmin(null)
           }}
-          onSave={onEdit}
         />
 
       )}

@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { divisions } from "@/lib/mock-data"
+import { editAdmin } from "@/apis/auth-apis"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -11,28 +10,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { AdminUser, NotificationPreferenceType, RoleType } from "@/types"
-import { ScrollArea } from "../ui/scroll-area"
-import { TextInput } from "../TextField"
 import { addAdminSchema } from "@/schemas/user.schema"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useForm } from "react-hook-form"
 import { useAdminStore } from "@/store/useAdminStore"
-import { addNewAdmin, editAdmin } from "@/apis/auth-apis"
+import { AdminUser } from "@/types"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { validAdminRoles } from "../constants"
+import { TextInput } from "../TextField"
+import { ScrollArea } from "../ui/scroll-area"
 
 interface EditAdminDialogProps {
   admin: AdminUser
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave: (admin: AdminUser) => void
 }
 
-export default function EditAdminDialog({ admin, open, onOpenChange, onSave }: EditAdminDialogProps) {
+export default function EditAdminDialog({ admin, open, onOpenChange,  }: EditAdminDialogProps) {
   const {
     register,
     handleSubmit,

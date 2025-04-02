@@ -121,7 +121,6 @@ export default function AdminManagement() {
         <TabsContent value="list" className="space-y-4">
           <AdminListView
             admins={sortedAdmins}
-            onEdit={handleEditAdmin}
             onDelete={handleDeleteAdmin}
             sortField={sortField}
             sortDirection={sortDirection}

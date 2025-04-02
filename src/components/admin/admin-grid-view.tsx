@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Edit, Trash2 } from "lucide-react"
+import { Edit, Key, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,6 +19,7 @@ import {
 import EditAdminDialog from "./edit-admin-dialog"
 import { formatDate, getRoleBadgeColor } from "@/lib/utils"
 import { AdminUser } from "@/types"
+import ChangePasswordDialog from "./change-password-dialog"
 
 interface AdminGridViewProps {
   admins: AdminUser[]
@@ -29,6 +30,7 @@ interface AdminGridViewProps {
 export default function AdminGridView({ admins, onEdit, onDelete }: AdminGridViewProps) {
   const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isPasswordChangeDialogOpen, setIsPasswordChangeDialogOpen] = useState(false)
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -70,48 +72,63 @@ export default function AdminGridView({ admins, onEdit, onDelete }: AdminGridVie
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-between pt-2">
+            <CardFooter className="flex flex-col gap-2 ">
+              <div className="flex justify-between w-full gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setCurrentAdmin(admin)
+                    setIsEditDialogOpen(true)
+                  }}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-destructive border-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the administrator account and remove
+                        their data from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => onDelete(admin.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
               <Button
                 variant="outline"
                 size="sm"
+                className="w-full"
                 onClick={() => {
                   setCurrentAdmin(admin)
-                  setIsEditDialogOpen(true)
+                  setIsPasswordChangeDialogOpen(true)
                 }}
               >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
+                <Key className="mr-2 h-4 w-4" />
+                Change Password
               </Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-destructive border-destructive hover:bg-destructive/10"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the administrator account and remove
-                      their data from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => onDelete(admin.id)}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
             </CardFooter>
           </Card>
         ))
@@ -125,7 +142,16 @@ export default function AdminGridView({ admins, onEdit, onDelete }: AdminGridVie
             setIsEditDialogOpen(open)
             if (!open) setCurrentAdmin(null)
           }}
-          onSave={onEdit}
+        />
+      )}
+      {currentAdmin && (
+        <ChangePasswordDialog
+          admin={currentAdmin}
+          open={isPasswordChangeDialogOpen}
+          onOpenChange={(open) => {
+            setIsPasswordChangeDialogOpen(open)
+            if (!open) setCurrentAdmin(null)
+          }}
         />
       )}
     </div>
