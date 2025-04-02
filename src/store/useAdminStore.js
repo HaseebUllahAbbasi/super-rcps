@@ -7,6 +7,8 @@ const useAdminStore = create(
   persist(
     (set) => ({
       admins: [],
+      statuses: [], // statuses array
+      divisions: [],
       loading: false,
       error: null,
 
@@ -20,13 +22,13 @@ const useAdminStore = create(
         }
 
         try {
-          const response = await axiosInstance.get('/api/admins/admin-users', {
+          const response = await axiosInstance.get('/api/admins/getAdminPortalData', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          console.log(response?.data)
-          set({ admins: response?.data?.data?.admins, loading: false });
+          console.log("====store====",response?.data?.data)
+          set({ ...response?.data?.data, loading: false });
         } catch (error) {
           set({ error: error.response?.data?.message || 'Failed to fetch users', loading: false });
         }
@@ -35,7 +37,25 @@ const useAdminStore = create(
         set((state) => ({
           admins: [...state.admins, admin],
         }));
-      }
+      },
+       updateStatus: (updatedStatus) => {
+        set((state) => ({
+          statuses: state.statuses.map((status) =>
+            status?.id === updatedStatus?.id ? updatedStatus : status
+          ),
+        }));
+      },
+      updateDivision: (updatedDivision) =>
+        set((state) => ({
+          divisions: state.divisions.map((div) =>
+            div.id === updatedDivision.id ? updatedDivision : div
+          ),
+        })),
+    
+      addDivision: (newDivision) =>
+        set((state) => ({
+          divisions: [...state.divisions, newDivision],
+        })),
     }),
     {
       name: 'users-storage', // Key for localStorage persistence
@@ -43,4 +63,5 @@ const useAdminStore = create(
   )
 );
 
-export { useAdminStore};
+export { useAdminStore };
+

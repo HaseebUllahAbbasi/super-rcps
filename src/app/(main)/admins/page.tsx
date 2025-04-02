@@ -20,7 +20,7 @@ export default function AdminManagement() {
   const [sortField, setSortField] = useState<SortField>("name")
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const { fetchUsers, admins } = useAdminStore()
+  const { fetchUsers, admins, error: fetchingError } = useAdminStore()
 
 
   useEffect(() => {
@@ -54,8 +54,8 @@ export default function AdminManagement() {
 
   // Sort admins based on sort field and direction
   const sortedAdmins = [...filteredAdmins].sort((a, b) => {
-    const aValue = a[sortField] || ""
-    const bValue = b[sortField] || ""
+    const aValue: string = a[sortField] || ""
+    const bValue: string = b[sortField] || ""
 
     // Handle special case for dates
     if (sortField === "createdAt") {
@@ -99,6 +99,7 @@ export default function AdminManagement() {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      <p className="text-red-400 text-center">{fetchingError}</p>
       <Tabs defaultValue="list" className="w-full">
         <AdminHeader>
           <TabsList>

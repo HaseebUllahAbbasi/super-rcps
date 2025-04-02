@@ -15,12 +15,13 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area"; // Import ScrollArea
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { addAdminSchema } from "@/schemas/user.schema";
+import { useAdminStore } from "@/store/useAdminStore";
 import { AdminUser } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { SINDH_DISTRICTS, USER_ROLES } from "../constants";
-import { useAdminStore } from "@/store/useAdminStore";
+import { USER_ROLES } from "../constants";
 
 const validAdminRoles = Object.values(USER_ROLES).filter(
   role => role !== USER_ROLES.CITIZEN && role !== USER_ROLES.SUPER_ADMIN
@@ -40,12 +41,15 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
     setValue,
     formState: { errors },
   } = useForm({ resolver: yupResolver(addAdminSchema) });
-  const { addAdminToStore } = useAdminStore()
+  const { addAdminToStore, divisions } = useAdminStore();
+  const [loading, setLoading] = useState(false)
 
   // handle add admin
   const onSubmit = async (data: any) => {
     console.log(data);
+    setLoading(true)
     const response = await addNewAdmin(data);
+    setLoading(false)
     console.log(response)
     if (response.error) {
       return toast.error(response.error);
@@ -93,8 +97,8 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
                     <SelectValue placeholder="Select division" />
                   </SelectTrigger>
                   <SelectContent>
-                    {SINDH_DISTRICTS.map((division) => (
-                      <SelectItem key={division.id} value={division.id}>{division.name}</SelectItem>
+                    {divisions.map((division: any) => (
+                      <SelectItem key={division.id} value={division.originalName}>{division.divisionLabel}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -105,7 +109,7 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Add Administrator</Button>
+              <Button loading={loading} type="submit">Add Administrator</Button>
             </DialogFooter>
           </form>
         </ScrollArea>

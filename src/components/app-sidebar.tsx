@@ -1,5 +1,5 @@
 "use client"
-import { Briefcase, Building, LayoutDashboard, LogOut, MapPin, Settings, Users } from "lucide-react"
+import { Building, LayoutDashboard, LogOut, MapPin, Settings, Users } from "lucide-react"
 
 import {
   Sidebar,
@@ -11,10 +11,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { usePathname } from "next/navigation"
+import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 
 // Menu items with appropriate icons.
@@ -30,18 +30,13 @@ const items = [
     icon: Users, // Represents people/administrators
   },
   {
-    title: "Divisional Head",
-    url: "/divisional-head",
-    icon: Briefcase, // Represents leadership/management
-  },
-  {
     title: "Divisions",
     url: "/divisions",
     icon: Building, // Represents organizational divisions
   },
   {
-    title: "Districts",
-    url: "/districts",
+    title: "Statuses",
+    url: "/statuses",
     icon: MapPin, // Represents geographical locations
   },
   {

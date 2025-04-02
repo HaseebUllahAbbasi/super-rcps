@@ -14,9 +14,9 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-      <div className="items-center gap-4">
+      <div className="items-center gap-4 my-2">
         <Label htmlFor={id}>{label}</Label>
-        <div className="relative ">
+        <div className="relative mt-2">
           <Input
             id={id}
             ref={ref}
