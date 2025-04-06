@@ -98,7 +98,7 @@ export default function AdminManagement() {
 
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4  overflow-hidden">
       <p className="text-red-400 text-center">{fetchingError}</p>
       <Tabs defaultValue="list" className="w-full">
         <AdminHeader>
