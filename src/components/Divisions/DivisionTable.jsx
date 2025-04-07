@@ -15,7 +15,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 
 const divisionSchema = z.object({
   divisionLabel: z.string().min(1, "Division label is required"),
-  originalName: z.string().min(1, "Division original is required")
+  originalName: z.string().min(1, "Division original is required"),
 });
 
 const DivisionManagement = () => {
@@ -25,7 +25,7 @@ const DivisionManagement = () => {
   const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, reset } = useForm({
-    resolver: zodResolver(divisionSchema)
+    resolver: zodResolver(divisionSchema),
   });
 
   const handleEdit = (division) => {
@@ -72,20 +72,20 @@ const DivisionManagement = () => {
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-          <TableBody>
-            {divisions?.map((division,index) => (
-              <TableRow key={division?.id}>
-                <TableCell>{index}</TableCell>
-                <TableCell>{division?.originalName}</TableCell>
-                <TableCell>{division?.divisionLabel}</TableCell>
-                <TableCell>
-                  <Button size="icon" variant="ghost" onClick={() => handleEdit(division)}>
-                    <Edit size={16} />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+        <TableBody>
+          {divisions?.map((division, index) => (
+            <TableRow key={division?.id}>
+              <TableCell>{index}</TableCell>
+              <TableCell>{division?.originalName}</TableCell>
+              <TableCell>{division?.divisionLabel}</TableCell>
+              <TableCell>
+                <Button size="icon" variant="ghost" onClick={() => handleEdit(division)}>
+                  <Edit size={16} />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
       </Table>
 
       {/* Edit Division Modal */}
@@ -117,8 +117,19 @@ const DivisionManagement = () => {
           </DialogHeader>
           <form onSubmit={handleSubmit(handleAddDivision)}>
             <div className="space-y-4">
-              <TextInput {...register("originalName")} label="Original Name" />
-              <TextInput {...register("divisionLabel")} label="Division Label" />
+              
+              <TextInput
+                labelDescription={"⚠️ Only lowercase letters are allowed. No numbers or special characters."}
+                {...register("originalName")}
+                label="Original Name"
+                onInput={(e) => {
+                  const target = e.currentTarget;
+                  target.value = target.value
+                    .replace(/[^a-zA-Z\s]/g, "") // Remove non-letters (excluding spaces)
+                    .replace(/\s+/g, "_").toLowerCase(); // Replace spaces with underscores
+                }}
+              />
+              <TextInput {...register("divisionLabel")} label="Division Label" className="mt-3" />
             </div>
             <DialogFooter className="mt-4">
               <Button type="submit" loading={loading}>

@@ -7,6 +7,7 @@ interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   id: string;
   error?: string;
+  labelDescription?: string
 }
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
@@ -16,6 +17,9 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     return (
       <div className="items-center gap-4 my-2">
         <Label htmlFor={id}>{label}</Label>
+        {props?.labelDescription && <p className="text-sm text-gray-500 mb-1">
+          {props?.labelDescription}
+        </p>}
         <div className="relative mt-2">
           <Input
             id={id}

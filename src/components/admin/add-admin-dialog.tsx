@@ -40,6 +40,7 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
     handleSubmit,
     setValue,
     formState: { errors },
+    reset
   } = useForm({ resolver: yupResolver(addAdminSchema) });
   const { addAdminToStore, divisions } = useAdminStore();
   const [loading, setLoading] = useState(false)
@@ -57,6 +58,7 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
     console.log(addAdminToStore)
     addAdminToStore(response?.data?.admin)
     toast.success(response.data?.message || "Admin added successfully");
+    reset();
     onOpenChange(false)
   };
 
@@ -74,7 +76,10 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
             <div className="grid gap-4 py-4">
               <TextInput id="name" error={errors.name?.message || ""} label={"Name"} {...register("name")} />
               <TextInput id="email" error={errors.email?.message || ""} label={"Email"} {...register("email")} />
-              <TextInput id="phone" error={errors.phone?.message || ""} label={"Phone Number"} {...register("phone")} />
+              <TextInput id="phone" error={errors.phone?.message || ""} label={"Phone Number"} {...register("phone")} maxLength={11} onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                const target = e.currentTarget;
+                target.value = target.value.replace(/\D/g, ""); // Remove non-numeric characters
+              }} />
               <TextInput type="password" id="password" error={errors.password?.message || ""} label={"Password"} {...register("password")} />
               <div className="items-center gap-4">
                 <Label htmlFor="role">Role</Label>
@@ -96,7 +101,7 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
                   <SelectTrigger className="col-span-3 w-full">
                     <SelectValue placeholder="Select division" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-36">
                     {divisions.map((division: any) => (
                       <SelectItem key={division.id} value={division.originalName}>{division.divisionLabel}</SelectItem>
                     ))}

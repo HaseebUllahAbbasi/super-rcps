@@ -50,16 +50,16 @@ const ComplaintStatusTable = () => {
         <TableHeader>
           <TableRow>
             <TableHead>ID</TableHead>
-            <TableHead>Status Label</TableHead>
+            <TableHead>General Label</TableHead>
             <TableHead>Citizen Label</TableHead>
             <TableHead>Admin Label</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {statuses.map((status) => (
-            <TableRow key={status.id}>
-              <TableCell>{status.id}</TableCell>
+          {statuses.map((status,index) => (
+            <TableRow key={index}>
+              <TableCell>{index+1}</TableCell>
               <TableCell>{status.statusLabel}</TableCell>
               <TableCell>{status.citizenLabel}</TableCell>
               <TableCell>{status.adminLabel}</TableCell>
@@ -81,7 +81,7 @@ const ComplaintStatusTable = () => {
           </DialogHeader>
           <form onSubmit={handleSubmit(handleUpdate)}>
             <div className="space-y-4">
-              <TextInput {...register("statusLabel")} label="Status Label" />
+              <TextInput {...register("statusLabel")} label="Status Label" disabled={true} />
               <TextInput {...register("citizenLabel")} label="Citizen Label" />
               <TextInput {...register("adminLabel")} label="Admin Label" />
             </div>

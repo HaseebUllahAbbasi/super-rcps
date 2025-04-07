@@ -1,6 +1,6 @@
+import { validAdminRoles } from "@/components/constants";
+import * as yup from "yup";
 import { z } from "zod";
-import * as yup from "yup"
-import { validAdminRoles, validDivisions } from "@/components/constants";
 
 const loginSchema = z.object({
   email: z.string().min(1, { message: "Email is required" }).email({ message: "Invalid email address" }),
@@ -18,7 +18,7 @@ export const addAdminSchema = yup.object().shape({
   phone: yup.string().min(10).max(20).required("Phone is required"),
   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
   role: yup.string().oneOf(validAdminRoles, "Invalid role").required("Role is required"),
-  division: yup.string().oneOf(validDivisions, "Invalid division").required("Division is required"),
+  division: yup.string().required("Division is required"),
 });
 
 export const updateAdminSchema = yup.object().shape({
@@ -27,7 +27,7 @@ export const updateAdminSchema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
   phone: yup.string().min(10).max(20).required("Phone is required"),
   role: yup.string().oneOf(validAdminRoles, "Invalid role").required("Role is required"),
-  division: yup.string().oneOf(validDivisions, "Invalid division").required("Division is required"),
+  division: yup.string().required("Division is required"),
 });
 
 
@@ -36,4 +36,4 @@ export const changePasswordSchema = yup.object().shape({
   confirmPassword: yup.string().oneOf([yup.ref("password"), undefined], "Passwords do not match").required("Confirm Password is required"),
 });
 
-export { loginSchema }
+export { loginSchema };
