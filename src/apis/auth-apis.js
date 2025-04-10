@@ -2,7 +2,7 @@ import { axiosInstance } from "../utils/axiosInstance";
 
 export const loginAdmin = async payload => {
   try {
-    const response = await axiosInstance.post("/api/auth/login", payload);
+    const response = await axiosInstance.post("/api/admins/superAdminLogin", payload);
     return { data: response.data, error: "" };
   } catch (err) {
     console.log(err)
