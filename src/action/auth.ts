@@ -90,11 +90,7 @@ export async function getSession() {
 
   // In a real app, verify and decode the token
   // For demo purposes, we'll return a mock user
-  return {
-    user: {
-      email: "user@example.com",
-    },
-  };
+  return token;
 }
 
 export async function requireAuth() {

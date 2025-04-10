@@ -1,7 +1,7 @@
 import { LoginForm } from "@/components/login-form"
 import Image from "next/image"
 
-export default function LoginPage() {
+export default async function LoginPage() {
   return (
     <div className="flex flex-col space-y-4 min-h-screen items-center justify-center  px-4 py-12 sm:px-6 lg:px-8">
       <Image src={"/logo.png"} alt="Logo" width={200} height={200} />

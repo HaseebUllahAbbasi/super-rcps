@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 // Define which paths require authentication
-const protectedPaths = ["/dashboard", "/profile", "/settings"]
+const protectedPaths = ["/dashboard", "/admins", "/divisions", "/statuses", "/profile", "/settings"] 
 
 // Define paths that should be accessible only to non-authenticated users
 const authPaths = ["/", "/register"]
@@ -11,6 +11,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const token = request.cookies.get("auth-token")?.value
 
+  
   // Check if the path is protected and user is not authenticated
   if (protectedPaths.some((path) => pathname.startsWith(path)) && !token) {
     const url = request.nextUrl.clone()
