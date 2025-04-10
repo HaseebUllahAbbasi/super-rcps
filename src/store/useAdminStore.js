@@ -30,7 +30,14 @@ const useAdminStore = create(
           console.log("====store====",response?.data?.data)
           set({ ...response?.data?.data, loading: false });
         } catch (error) {
-          set({ error: error.response?.data?.message || 'Failed to fetch users', loading: false });
+          const clearData={
+            admins: [],
+            statuses: [],
+            divisions: [],
+            loading: false,
+            error: error.response?.data?.message || 'Failed to fetch users',
+          }
+          set(clearData);
         }
       },
       addAdminToStore:(admin)=>{
