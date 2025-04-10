@@ -61,3 +61,11 @@ export interface SortOptions {
   field: SortField;
   direction: SortDirection;
 }
+
+export interface Division{
+  id:number,
+  originalName:string
+  divisionLabel:string
+  createdAt:string
+  updatedAt:string
+}

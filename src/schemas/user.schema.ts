@@ -16,6 +16,7 @@ export const addAdminSchema = yup.object().shape({
   name: yup.string().min(3).max(50).required("Name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
   phone: yup.string().min(10).max(20).required("Phone is required"),
+  cnic: yup.string().min(13).max(15).required("CNIC is required"),
   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
   role: yup.string().oneOf(validAdminRoles, "Invalid role").required("Role is required"),
   division: yup.string().required("Division is required"),

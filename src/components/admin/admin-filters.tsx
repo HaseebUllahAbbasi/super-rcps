@@ -53,8 +53,8 @@ export default function AdminFilters({
           <SelectValue placeholder="Filter by division" />
         </SelectTrigger>
         <SelectContent>
-          {SINDH_DISTRICTS.map((division) => (
-            <SelectItem key={division.id} value={division.id}>{division.name}</SelectItem>
+          {SINDH_DISTRICTS.map((division,index) => (
+            <SelectItem key={index} value={division.id}>{division.name}</SelectItem>
           ))}
         </SelectContent>
       </Select>

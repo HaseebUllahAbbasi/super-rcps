@@ -16,7 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"; // Import ScrollArea
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { addAdminSchema } from "@/schemas/user.schema";
 import { useAdminStore } from "@/store/useAdminStore";
-import { AdminUser } from "@/types";
+import { AdminUser, Division } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -80,6 +80,10 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
                 const target = e.currentTarget;
                 target.value = target.value.replace(/\D/g, ""); // Remove non-numeric characters
               }} />
+              <TextInput id="cnic" error={errors.cnic?.message || ""} label={"CNIC"} {...register("cnic")} maxLength={15} onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                const target = e.currentTarget;
+                target.value = target.value.replace(/\D/g, ""); // Remove non-numeric characters
+              }} />
               <TextInput type="password" id="password" error={errors.password?.message || ""} label={"Password"} {...register("password")} />
               <div className="items-center gap-4">
                 <Label htmlFor="role">Role</Label>
@@ -88,8 +92,8 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    {validAdminRoles.map(role => (
-                      <SelectItem key={role} value={role}>{role}</SelectItem>
+                    {validAdminRoles.map((role, index) => (
+                      <SelectItem key={index} value={role}>{role}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -102,8 +106,8 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
                     <SelectValue placeholder="Select division" />
                   </SelectTrigger>
                   <SelectContent className="max-h-36">
-                    {divisions.map((division: any) => (
-                      <SelectItem key={division.id} value={division.originalName}>{division.divisionLabel}</SelectItem>
+                    {divisions.map((division: Division, index: number) => (
+                      <SelectItem key={index} value={division.originalName}>{division.divisionLabel}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

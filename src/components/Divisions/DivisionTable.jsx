@@ -74,7 +74,7 @@ const DivisionManagement = () => {
         </TableHeader>
         <TableBody>
           {divisions?.map((division, index) => (
-            <TableRow key={division?.id}>
+            <TableRow key={index}>
               <TableCell>{index}</TableCell>
               <TableCell>{division?.originalName}</TableCell>
               <TableCell>{division?.divisionLabel}</TableCell>
@@ -117,7 +117,6 @@ const DivisionManagement = () => {
           </DialogHeader>
           <form onSubmit={handleSubmit(handleAddDivision)}>
             <div className="space-y-4">
-              
               <TextInput
                 labelDescription={"⚠️ Only lowercase letters are allowed. No numbers or special characters."}
                 {...register("originalName")}
@@ -126,7 +125,8 @@ const DivisionManagement = () => {
                   const target = e.currentTarget;
                   target.value = target.value
                     .replace(/[^a-zA-Z\s]/g, "") // Remove non-letters (excluding spaces)
-                    .replace(/\s+/g, "_").toLowerCase(); // Replace spaces with underscores
+                    .replace(/\s+/g, "_")
+                    .toLowerCase(); // Replace spaces with underscores
                 }}
               />
               <TextInput {...register("divisionLabel")} label="Division Label" className="mt-3" />
