@@ -1,10 +1,10 @@
-import { AdminUser, DivisionType } from "@/types"
+import { DivisionType } from "@/types"
 
 // Mock divisions data
 export const divisions: DivisionType[] = ["North", "South", "East", "West", "Central"]
 
 // Mock data for demonstration
-export const mockAdmins: AdminUser[] = [
+export const mockAdmins: any[] = [
   {
     id: 1,
     name: "John Doe",

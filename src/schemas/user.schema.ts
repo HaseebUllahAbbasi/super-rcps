@@ -15,8 +15,11 @@ const loginSchema = z.object({
 export const addAdminSchema = yup.object().shape({
   name: yup.string().min(3).max(50).required("Name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
-  phone: yup.string().min(10).max(20).required("Phone is required"),
-  cnic: yup.string().min(13).max(15).required("CNIC is required"),
+  phone: yup
+  .string()
+  .matches(/^(\d{4})-(\d{7})$/, "Phone number must be 11 digits")
+  .required("Phone number is required"),
+    cnic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d{1}$/,"CNIC must follow the format xxxxx-xxxxxxx-x"),
   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
   role: yup.string().oneOf(validAdminRoles, "Invalid role").required("Role is required"),
   division: yup.string().required("Division is required"),
