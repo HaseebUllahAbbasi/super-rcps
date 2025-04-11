@@ -4,7 +4,7 @@ import { fetchAllComplaintStatuses } from "../../../apis/auth-apis";
 
 const Page = async () => {
   return (
-    <div className="sm:px-20 sm:my-20">
+    <div className="sm:px-20 px-4 sm:my-20">
       <ComplaintStatusTable />
     </div>
   );

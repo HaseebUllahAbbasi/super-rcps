@@ -4,14 +4,15 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAdminStore } from "@/store/useAdminStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Plus } from "lucide-react";
-import { useState } from "react";
+import { Edit, LoaderPinwheel, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { addNewDivision, updateDivisionById } from "../../apis/auth-apis";
 import { TextInput } from "../TextField";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { LoadingScreen } from "../reuseable/loading";
 
 const divisionSchema = z.object({
   divisionLabel: z.string().min(1, "Division label is required"),
@@ -19,7 +20,7 @@ const divisionSchema = z.object({
 });
 
 const DivisionManagement = () => {
-  const { divisions, updateDivision, addDivision } = useAdminStore();
+  const { fetchUsers, divisions, updateDivision, addDivision,loading: adminLoading  } = useAdminStore();
   const [editDivision, setEditDivision] = useState(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,6 +33,11 @@ const DivisionManagement = () => {
     setEditDivision(division);
     reset(division);
   };
+
+
+    useEffect(() => {
+      fetchUsers();
+    }, [fetchUsers]);
 
   const handleUpdate = async (updatedDivisionInfo) => {
     setLoading(true);
@@ -54,6 +60,10 @@ const DivisionManagement = () => {
     reset();
   };
 
+  if(adminLoading) {
+    return <LoadingScreen fullScreen={true} text="Loading..." />;
+  }
+  
   return (
     <div>
       {/* Table */}
@@ -97,7 +107,7 @@ const DivisionManagement = () => {
           </DialogHeader>
           <form onSubmit={handleSubmit(handleUpdate)}>
             <div className="space-y-4">
-              <TextInput {...register("divisionLabel")} label="Division Label" />
+              <TextInput {...register("divisionLabel")} placeholder="Enter the display name for the division" label="Division Label" />
             </div>
             <DialogFooter className="mt-4">
               <Button type="submit" loading={loading}>
@@ -119,6 +129,7 @@ const DivisionManagement = () => {
             <div className="space-y-4">
               <TextInput
                 labelDescription={"⚠️ Only lowercase letters are allowed. No numbers or special characters."}
+                placeholder="e.g. karachi_central"
                 {...register("originalName")}
                 label="Original Name"
                 onInput={(e) => {
@@ -129,7 +140,7 @@ const DivisionManagement = () => {
                     .toLowerCase(); // Replace spaces with underscores
                 }}
               />
-              <TextInput {...register("divisionLabel")} label="Division Label" className="mt-3" />
+              <TextInput {...register("divisionLabel")}   placeholder="Enter the display name for the division" label="Division Label" className="mt-3" />
             </div>
             <DialogFooter className="mt-4">
               <Button type="submit" loading={loading}>

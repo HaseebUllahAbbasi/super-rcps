@@ -1,4 +1,5 @@
 "use client";
+import { logout } from "@/action/auth";
 import {
   Card,
   CardContent,
@@ -6,11 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { LoaderPinwheel } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
-import { logout } from "@/action/auth";
 
 export default function LogoutLoading() {
   useEffect(() => {
@@ -22,10 +21,7 @@ export default function LogoutLoading() {
 
   return (
     <div className="flex w-full min-h-screen  bg-background  items-center justify-center ">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
+      <div
         className="w-full p-5"
       >
         <Image
@@ -45,10 +41,10 @@ export default function LogoutLoading() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center py-8">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <LoaderPinwheel className="h-10 w-10 animate-spin text-primary" />
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

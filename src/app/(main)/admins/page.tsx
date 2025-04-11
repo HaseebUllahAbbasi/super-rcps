@@ -97,8 +97,9 @@ export default function AdminManagement() {
   }
 
 
+
   return (
-    <div className="container mx-auto py-8 px-4  overflow-hidden">
+    <div className="container mx-auto py-8 px-4   overflow-hidden">
       <p className="text-red-400 text-center">{fetchingError}</p>
       <Tabs defaultValue="list" className="w-full">
         <AdminHeader>
@@ -119,14 +120,16 @@ export default function AdminManagement() {
         />
 
         <TabsContent value="list" className="space-y-4">
-          <AdminListView
-            admins={sortedAdmins}
-            onDelete={handleDeleteAdmin}
-            sortField={sortField}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-          />
-        </TabsContent>
+         
+          
+         <AdminListView
+         admins={sortedAdmins}
+         onDelete={handleDeleteAdmin}
+         sortField={sortField}
+         sortDirection={sortDirection}
+         onSort={handleSort}
+       />
+               </TabsContent>
 
         <TabsContent value="grid" className="space-y-4">
           <AdminGridView admins={sortedAdmins} onEdit={handleEditAdmin} onDelete={handleDeleteAdmin} />

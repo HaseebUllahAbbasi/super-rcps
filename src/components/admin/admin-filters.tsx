@@ -2,7 +2,13 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Search, UserPlus } from "lucide-react"
 import { SINDH_DISTRICTS, validAdminRoles } from "../constants"
 
@@ -37,24 +43,28 @@ export default function AdminFilters({
         />
       </div>
 
-      <Select value={roleFilter} onValueChange={setRoleFilter}>
+      <Select value={roleFilter == "all"  ? "" : roleFilter} onValueChange={setRoleFilter}>
         <SelectTrigger className="w-full md:w-[180px]">
-          <SelectValue placeholder="Filter by role" />
+          <SelectValue placeholder="Select role" />
         </SelectTrigger>
         <SelectContent>
-          {validAdminRoles.map(role => (
-            <SelectItem key={role} value={role}>{role}</SelectItem>
+          {validAdminRoles.map((role) => (
+            <SelectItem key={role} value={role}>
+              {role}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <Select value={divisionFilter} onValueChange={setDivisionFilter}>
+      <Select value={divisionFilter == "all"  ? "" : divisionFilter} onValueChange={setDivisionFilter}>
         <SelectTrigger className="w-full md:w-[180px]">
-          <SelectValue placeholder="Filter by division" />
+          <SelectValue placeholder="Select Division" />
         </SelectTrigger>
         <SelectContent>
-          {SINDH_DISTRICTS.map((division,index) => (
-            <SelectItem key={index} value={division.id}>{division.name}</SelectItem>
+          {SINDH_DISTRICTS.map((division, index) => (
+            <SelectItem key={index} value={division.id}>
+              {division.name}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -64,6 +74,5 @@ export default function AdminFilters({
         Add Admin
       </Button>
     </div>
-  )
+  );
 }
-

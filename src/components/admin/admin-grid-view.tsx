@@ -1,10 +1,5 @@
 "use client"
 
-import { useState } from "react"
-import { Edit, Key, Trash2 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,10 +11,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import EditAdminDialog from "./edit-admin-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate, getRoleBadgeColor } from "@/lib/utils"
 import { AdminUser } from "@/types"
+import { Edit, Key, Lock, Trash2 } from "lucide-react"
+import { useState } from "react"
 import ChangePasswordDialog from "./change-password-dialog"
+import EditAdminDialog from "./edit-admin-dialog"
 
 interface AdminGridViewProps {
   admins: AdminUser[]
@@ -87,14 +87,15 @@ export default function AdminGridView({ admins,  onDelete }: AdminGridViewProps)
                 </Button>
 
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
+                  <AlertDialogTrigger disabled asChild>
                     <Button
-                      variant="outline"
+                      variant="destructive"
                       size="sm"
-                      className="text-destructive border-destructive hover:bg-destructive/10"
+
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete
+                      <Lock className="h-4 w-4 ml-2" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>

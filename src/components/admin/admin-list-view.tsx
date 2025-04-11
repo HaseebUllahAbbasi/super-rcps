@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { ArrowDown, ArrowUp, MoreHorizontal, Edit, Trash2, Key } from "lucide-react"
+import { ArrowDown, ArrowUp, MoreHorizontal, Edit, Trash2, Key, LoaderPinwheel, Lock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -31,6 +31,7 @@ import EditAdminDialog from "./edit-admin-dialog"
 import { AdminUser, SortDirection, SortField } from "@/types"
 import { formatDate, getRoleBadgeColor } from "@/lib/utils"
 import ChangePasswordDialog from "./change-password-dialog"
+import { useAdminStore } from "@/store/useAdminStore"
 
 interface AdminListViewProps {
   admins: AdminUser[]
@@ -50,6 +51,8 @@ export default function AdminListView({
   const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isPasswordChangeDialogOpen, setIsPasswordChangeDialogOpen] = useState(false)
+  const {  loading } = useAdminStore()
+
 
   // Render sort indicator
   const renderSortIndicator = (field: SortField) => {
@@ -85,9 +88,21 @@ export default function AdminListView({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {admins.length === 0 ? (
+            {loading ? (
+               <TableRow>
+               <TableCell
+                 colSpan={8}
+                 className="text-center mx-auto   py-8 text-muted-foreground"
+               >
+                 <LoaderPinwheel className="h-6 relative mx-auto text-primary animate-spin  w-6" />
+               </TableCell>
+             </TableRow>
+            ) : admins.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                <TableCell
+                  colSpan={8}
+                  className="text-center py-8 text-muted-foreground"
+                >
                   No administrators found matching your filters
                 </TableCell>
               </TableRow>
@@ -98,7 +113,10 @@ export default function AdminListView({
                   <TableCell>{admin.email}</TableCell>
                   <TableCell>{admin.phone}</TableCell>
                   <TableCell>
-                    <Badge className={getRoleBadgeColor(admin.role)} variant="outline">
+                    <Badge
+                      className={getRoleBadgeColor(admin.role)}
+                      variant="outline"
+                    >
                       {admin.role.replace("_", " ")}
                     </Badge>
                   </TableCell>
@@ -117,8 +135,8 @@ export default function AdminListView({
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
                           onClick={() => {
-                            setCurrentAdmin(admin)
-                            setIsEditDialogOpen(true)
+                            setCurrentAdmin(admin);
+                            setIsEditDialogOpen(true);
                           }}
                         >
                           <Edit className="mr-2 h-4 w-4" />
@@ -126,8 +144,8 @@ export default function AdminListView({
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => {
-                            setCurrentAdmin(admin)
-                            setIsPasswordChangeDialogOpen(true)
+                            setCurrentAdmin(admin);
+                            setIsPasswordChangeDialogOpen(true);
                           }}
                         >
                           <Key className="mr-2 h-4 w-4" />
@@ -135,17 +153,23 @@ export default function AdminListView({
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <AlertDialogTrigger disabled asChild>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                            >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Delete
+                              <Lock className="ml-auto h-4 w-4" />
                             </DropdownMenuItem>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Are you absolutely sure?
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the administrator account and
+                                This action cannot be undone. This will
+                                permanently delete the administrator account and
                                 remove their data from our servers.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
@@ -175,24 +199,22 @@ export default function AdminListView({
           admin={currentAdmin}
           open={isEditDialogOpen}
           onOpenChange={(open) => {
-            setIsEditDialogOpen(open)
-            if (!open) setCurrentAdmin(null)
+            setIsEditDialogOpen(open);
+            if (!open) setCurrentAdmin(null);
           }}
         />
-
       )}
       {currentAdmin && (
         <ChangePasswordDialog
           admin={currentAdmin}
           open={isPasswordChangeDialogOpen}
           onOpenChange={(open) => {
-            setIsPasswordChangeDialogOpen(open)
-            if (!open) setCurrentAdmin(null)
+            setIsPasswordChangeDialogOpen(open);
+            if (!open) setCurrentAdmin(null);
           }}
         />
-
       )}
     </Card>
-  )
+  );
 }
 

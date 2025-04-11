@@ -20,6 +20,8 @@ export interface BaseUser {
 // Admin user with ID and timestamps
 export interface AdminUser extends BaseUser {
   id: number;
+  cnic: string;
+  phone: string;
   division?: string;
   createdAt: string;
   updatedAt?: string;
