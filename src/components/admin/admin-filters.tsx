@@ -10,7 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Search, UserPlus } from "lucide-react"
-import { SINDH_DISTRICTS, validAdminRoles } from "../constants"
+import { validAdminRoles } from "../constants"
+import { useAdminStore } from "@/store/useAdminStore"
+import { Division } from "@/types"
 
 interface AdminFiltersProps {
   searchTerm: string
@@ -31,6 +33,7 @@ export default function AdminFilters({
   setDivisionFilter,
   onAddClick,
 }: AdminFiltersProps) {
+  const { divisions } = useAdminStore()
   return (
     <div className="flex flex-col md:flex-row gap-4 mb-6">
       <div className="relative flex-1">
@@ -61,9 +64,9 @@ export default function AdminFilters({
           <SelectValue placeholder="Select Division" />
         </SelectTrigger>
         <SelectContent>
-          {SINDH_DISTRICTS.map((division, index) => (
-            <SelectItem key={index} value={division.id}>
-              {division.name}
+          {divisions.map((division:Division, index:number) => (
+            <SelectItem key={index} value={division.originalName}>
+              {division.divisionLabel}
             </SelectItem>
           ))}
         </SelectContent>
