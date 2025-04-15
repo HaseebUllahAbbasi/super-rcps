@@ -17,8 +17,8 @@ export default function AdminManagement() {
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [divisionFilter, setDivisionFilter] = useState<string>("all")
-  const [sortField, setSortField] = useState<SortField>("name")
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
+  const [sortField, setSortField] = useState<SortField>("createdAt")
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc")
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { fetchUsers, admins, error: fetchingError } = useAdminStore()
 
@@ -42,12 +42,12 @@ export default function AdminManagement() {
   // Filter admins based on search term and filters
   const filteredAdmins = admins?.filter((admin: AdminUser) => {
     const matchesSearch =
-      admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      admin.phone.includes(searchTerm)
+      admin?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin?.phone.includes(searchTerm)
 
-    const matchesRole = roleFilter === "all" || admin.role === roleFilter
-    const matchesDivision = divisionFilter === "all" || admin.division === divisionFilter
+    const matchesRole = roleFilter === "all" || admin?.role === roleFilter
+    const matchesDivision = divisionFilter === "all" || admin?.division === divisionFilter
 
     return matchesSearch && matchesRole && matchesDivision
   })

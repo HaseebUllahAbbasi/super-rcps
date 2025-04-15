@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { getCurrentUser } from "./apis/auth-apis"
 
 // Define which paths require authentication
 const protectedPaths = ["/dashboard", "/admins", "/divisions", "/statuses", "/profile", "/settings"] 
@@ -7,9 +8,10 @@ const protectedPaths = ["/dashboard", "/admins", "/divisions", "/statuses", "/pr
 // Define paths that should be accessible only to non-authenticated users
 const authPaths = ["/", "/register"]
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const token = request.cookies.get("auth-token")?.value
+  // const admin_token = request.cookies.get("auth-token")?.value;
+  const {success:token}=await getCurrentUser();
 
   
   // Check if the path is protected and user is not authenticated
