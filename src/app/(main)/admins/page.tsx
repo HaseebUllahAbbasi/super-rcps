@@ -42,12 +42,12 @@ export default function AdminManagement() {
   // Filter admins based on search term and filters
   const filteredAdmins = admins?.filter((admin: AdminUser) => {
     const matchesSearch =
-      admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      admin.phone.includes(searchTerm)
+      admin?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin?.phone.includes(searchTerm)
 
-    const matchesRole = roleFilter === "all" || admin.role === roleFilter
-    const matchesDivision = divisionFilter === "all" || admin.division === divisionFilter
+    const matchesRole = roleFilter === "all" || admin?.role === roleFilter
+    const matchesDivision = divisionFilter === "all" || admin?.division === divisionFilter
 
     return matchesSearch && matchesRole && matchesDivision
   })
