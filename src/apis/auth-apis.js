@@ -81,3 +81,13 @@ export const updateDivisionById=async(divisionId,divisionInfo)=>{
     return { data: null, error: err?.response?.data.message || "Errror while adding new admin please try again" };
   }
 }
+
+export const getCurrentUser=async()=>{
+  try {
+      const response = await axiosInstance.get("/api/users/me");
+      return { data: response.data?.data, success: response.data?.success, message: response.data?.message, error: null };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Error while fetching current user details"
+      return { error: error?.response, success: false, message: errorMessage, data: null }
+    }
+}
