@@ -1,5 +1,5 @@
 "use client"
-import { Building, LayoutDashboard, LogOut, MapPin, Settings, Users } from "lucide-react"
+import { Building, GalleryVertical, LayoutDashboard, LogOut, MapPin, Settings, Users } from "lucide-react"
 
 import {
   Sidebar,
@@ -38,6 +38,11 @@ const items = [
     title: "Statuses",
     url: "/statuses",
     icon: MapPin, // Represents geographical locations
+  },
+  {
+    title: "Gallary",
+    url: "/gallary",
+    icon: GalleryVertical,
   },
   {
     title: "Settings",
