@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Check, Loader2, Plus, Trash, Upload, X, Edit, ImageIcon } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { createImage, createTag, deleteTag, fetchAllImages, fetchAllTags, updateImage, updateTag } from "@/apis/gallary-apis"
+import { createImage, createTag, deleteImage, deleteTag, fetchAllImages, fetchAllTags, updateImage, updateTag } from "@/apis/gallary-apis"
 import {
   Dialog,
   DialogContent,
@@ -130,15 +130,10 @@ export default function GalleryAdminPage() {
 
     try {
       setLoading(true)
-
-      const response = await fetch(`/api/gallery/images/${id}`, {
-        method: "DELETE",
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to delete image")
+      const response = await deleteImage(id)
+      if(response?.error) {
+        toast.error(response?.error || "Error while deleting image")
       }
-
       // Remove from local state
       setImages(images.filter((img) => img.id !== id))
       toast.success("Image deleted successfully")
@@ -331,17 +326,11 @@ function ImageUploadForm({ tags, onSuccess }: { tags: Tag[]; onSuccess: () => vo
         formData.append("attachments", file) // Append each image file
       })
   
-      // const response = await fetch("/api/gallery/images", {
-      //   method: "POST",
-      //   body: formData, // No JSON stringify, just raw FormData
-      // })
       const response  = await createImage(formData)
-      
-  
-      console.log("Getting the response which are the images", response)
-      
-      
-      // if (!response.ok) throw new Error("Upload failed")
+      if(response?.error) {
+        toast.error(response?.error || "Error while uploading image")
+        return
+      }
   
       toast.success(`Successfully uploaded ${files.length} image(s)`)
       setTitle("")
@@ -525,29 +514,15 @@ function ImageEditForm({
 
     try {
       setSaving(true)
-
-      // const response = await fetch(`/api/gallery/images/${image.id}`, {
-      //   method: "PATCH",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     title,
-      //     description,
-      //     tagIds: selectedTags,
-      //   }),
-      // })
-
       const response = await updateImage(image.id, {
         title,
         description,
         tagIds: selectedTags,
       })
-      
 
-      // if (!response.ok) {
-      //   throw new Error("Failed to update image")
-      // }
+      if(response?.error) {
+        toast.error(response?.error || "Error while updating image")
+      }
 
       toast.success("Image updated successfully")
       onSuccess()
