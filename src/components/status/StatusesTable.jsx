@@ -1,23 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Edit } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,18 +14,21 @@ import { toast } from "sonner";
 import { useAdminStore } from "../../store/useAdminStore";
 import { useEffect } from "react";
 import { LoadingScreen } from "../reuseable/loading";
+import { Badge } from "../ui/badge";
 
 const statusSchema = z.object({
   statusLabel: z.string().min(1, "Status label is required"),
   citizenLabel: z.string().min(1, "Citizen label is required"),
   adminLabel: z.string().min(1, "Admin label is required"),
+  bgColor: z.string().min(1, "Background color is required"),
+  textColor: z.string().min(1, "Text color is required"),
 });
 
 const ComplaintStatusTable = () => {
   const { fetchUsers, statuses, updateStatus, loading: adminLoading } = useAdminStore();
   const [editStatus, setEditStatus] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit, reset, watch } = useForm({
     resolver: zodResolver(statusSchema),
   });
 
@@ -49,10 +39,13 @@ const ComplaintStatusTable = () => {
 
   const handleUpdate = async (updatedStatusInfo) => {
     setLoading(true);
-    const { data, error } = await updateStatusLabelByAdmin(
-      editStatus?.id,
-      updatedStatusInfo
-    );
+    const payload = {
+      ...updatedStatusInfo,
+      colorStyles: `bg-[${updatedStatusInfo?.bgColor}] text-[${updatedStatusInfo?.textColor}]`,
+    };
+    delete payload?.textColor;
+    delete payload?.bgColor;
+    const { data, error } = await updateStatusLabelByAdmin(editStatus?.id, payload);
     setLoading(false);
     if (error) return toast.error(error);
     console.log("---", data);
@@ -62,25 +55,19 @@ const ComplaintStatusTable = () => {
     setEditStatus(null);
   };
 
-
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  
-
   if (adminLoading) {
-    return (
-    <LoadingScreen fullScreen={true} text="Loading..." />
-    );
+    return <LoadingScreen fullScreen={true} text="Loading..." />;
   }
 
   return (
     <div>
-       {/* Table */}
-       <div className="flex justify-between mb-4">
+      {/* Table */}
+      <div className="flex justify-between mb-4">
         <h2 className="text-xl font-semibold">Statuses</h2>
-
       </div>
       <Table>
         <TableHeader>
@@ -100,11 +87,7 @@ const ComplaintStatusTable = () => {
               <TableCell>{status.citizenLabel}</TableCell>
               <TableCell>{status.adminLabel}</TableCell>
               <TableCell>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => handleEdit(status)}
-                >
+                <Button size="icon" variant="ghost" onClick={() => handleEdit(status)}>
                   <Edit size={16} />
                 </Button>
               </TableCell>
@@ -121,14 +104,32 @@ const ComplaintStatusTable = () => {
           </DialogHeader>
           <form onSubmit={handleSubmit(handleUpdate)}>
             <div className="space-y-4">
-              <TextInput
-                {...register("statusLabel")}
-                label="Status Label"
-                disabled={true}
-              />
+              <TextInput {...register("statusLabel")} label="Status Label" disabled={true} />
               <TextInput {...register("citizenLabel")} label="Citizen Label" />
               <TextInput {...register("adminLabel")} label="Admin Label" />
+              {/* Color Pickers */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Background Color</label>
+                <input type="color" {...register("bgColor")} className="h-10 w-16 p-1 border rounded" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Text Color</label>
+                <input type="color" {...register("textColor")} className="h-10 w-16 p-1 border rounded" />
+              </div>
             </div>
+            <div className="text-center">
+              <Badge
+                className="rounded-full mx-auto p-2 font-semibold mt-2 text-center"
+                style={{
+                  backgroundColor: watch("bgColor"),
+                  color: watch("textColor"),
+                }}
+              >
+                {editStatus?.adminLabel || ""}
+              </Badge>
+            </div>
+
             <DialogFooter className="mt-4">
               <Button type="submit" loading={loading}>
                 Save
