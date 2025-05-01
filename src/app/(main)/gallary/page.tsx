@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Check, Loader2, Plus, Trash, Upload, X, Edit, ImageIcon } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { createImage, createTag, deleteImage, deleteTag, fetchAllImages, fetchAllTags, updateImage, updateTag } from "@/apis/gallary-apis"
+import { createImage, createTag, deleteImage, deleteTag, fetchAllImages, fetchAllTags, updateImage, updateImageDisplayOrders, updateTag } from "@/apis/gallary-apis"
 import {
   Dialog,
   DialogContent,
@@ -101,16 +101,18 @@ export default function GalleryAdminPage() {
         order: index,
       }))
 
-      const response = await fetch("/api/gallery/images", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ imageOrders }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to update image order")
+      // const response = await fetch("/api/gallery/images", {
+      //   method: "PATCH",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ imageOrders }),
+      // })
+      const response = await updateImageDisplayOrders(imageOrders)
+      
+      if(response?.error) {
+        toast.error(response?.error || "Error while updating image order")
+        return
       }
 
       toast.success("Image order updated successfully")
@@ -133,6 +135,7 @@ export default function GalleryAdminPage() {
       const response = await deleteImage(id)
       if(response?.error) {
         toast.error(response?.error || "Error while deleting image")
+        return;
       }
       // Remove from local state
       setImages(images.filter((img) => img.id !== id))
@@ -522,6 +525,7 @@ function ImageEditForm({
 
       if(response?.error) {
         toast.error(response?.error || "Error while updating image")
+        return
       }
 
       toast.success("Image updated successfully")
@@ -632,6 +636,7 @@ export function TagsManagement({
       })
       if(response?.error) {
         toast.error(response?.error || "Error while creating tag")
+        return
       }
       
       const newTag = response?.data?.data?.tag
@@ -662,6 +667,7 @@ export function TagsManagement({
       })
       if(response?.error) {
         toast.error(response?.error || "Error while updating tag")
+        return;
       }
       const updatedTag = response?.data?.data?.tag
       if (updatedTag) {

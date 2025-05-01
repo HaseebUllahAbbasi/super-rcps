@@ -139,7 +139,7 @@ export const deleteImage = async (imageId) => {
 
 export const updateImageDisplayOrders = async (imageOrders) => {
   try {
-    const response = await axiosInstance.patch("/api/gallary/images", { imageOrders });
+    const response = await axiosInstance.patch("/api/gallary/images/order", { imageOrders });
     return { data: response.data, error: "" };
   } catch (err) {
     console.error(err);
