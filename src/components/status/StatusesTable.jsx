@@ -41,7 +41,7 @@ const ComplaintStatusTable = () => {
     setLoading(true);
     const payload = {
       ...updatedStatusInfo,
-      colorStyles: `bg-[${updatedStatusInfo?.bgColor}] text-[${updatedStatusInfo?.textColor}]`,
+      colorStyles: `!bg-[${updatedStatusInfo?.bgColor}] !text-[${updatedStatusInfo?.textColor}]`,
     };
     delete payload?.textColor;
     delete payload?.bgColor;
