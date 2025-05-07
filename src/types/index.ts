@@ -71,3 +71,30 @@ export interface Division{
   createdAt:string
   updatedAt:string
 }
+
+
+
+
+// Gallary Types 
+export type Tag = {
+  id: number
+  name: string
+  description: string | null
+}
+
+export type ImageTag = {
+  imageId: number
+  tagId: number
+  tag: Tag
+}
+
+export type Image = {
+  id: number
+  title: string
+  description: string | null
+  imageUrl: string
+  displayOrder: number
+  createdAt: string
+  updatedAt: string
+  imageTags: ImageTag[]
+}
