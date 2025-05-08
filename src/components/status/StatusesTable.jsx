@@ -15,6 +15,7 @@ import { useAdminStore } from "../../store/useAdminStore";
 import { useEffect } from "react";
 import { LoadingScreen } from "../reuseable/loading";
 import { Badge } from "../ui/badge";
+import {tailwindToInlineStyle} from  "../../utils/helper"
 
 const statusSchema = z.object({
   statusLabel: z.string().min(1, "Status label is required"),
@@ -76,6 +77,7 @@ const ComplaintStatusTable = () => {
             <TableHead>General Label</TableHead>
             <TableHead>Citizen Label</TableHead>
             <TableHead>Admin Label</TableHead>
+            <TableHead>Badge Preview</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -86,6 +88,7 @@ const ComplaintStatusTable = () => {
               <TableCell>{status.statusLabel}</TableCell>
               <TableCell>{status.citizenLabel}</TableCell>
               <TableCell>{status.adminLabel}</TableCell>
+              <TableCell>  <Badge className={`border border-green-800 text-black shadow-md capitalize bg-transparent`} style={tailwindToInlineStyle(status?.colorStyles||"")}>{status?.adminLabel}</Badge></TableCell>
               <TableCell>
                 <Button size="icon" variant="ghost" onClick={() => handleEdit(status)}>
                   <Edit size={16} />
