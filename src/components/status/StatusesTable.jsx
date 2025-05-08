@@ -22,6 +22,7 @@ const statusSchema = z.object({
   adminLabel: z.string().min(1, "Admin label is required"),
   bgColor: z.string().min(1, "Background color is required"),
   textColor: z.string().min(1, "Text color is required"),
+  borderColor: z.string().min(1, "Border color is required"),
 });
 
 const ComplaintStatusTable = () => {
@@ -41,7 +42,7 @@ const ComplaintStatusTable = () => {
     setLoading(true);
     const payload = {
       ...updatedStatusInfo,
-      colorStyles: `bg-[${updatedStatusInfo?.bgColor}] text-[${updatedStatusInfo?.textColor}]`,
+      colorStyles: `bg-[${updatedStatusInfo?.bgColor}] text-[${updatedStatusInfo?.textColor}] border-[${updatedStatusInfo?.borderColor}]`,
     };
     delete payload?.textColor;
     delete payload?.bgColor;
@@ -98,7 +99,7 @@ const ComplaintStatusTable = () => {
 
       {/* Edit Modal */}
       <Dialog open={!!editStatus} onOpenChange={setEditStatus}>
-        <DialogContent>
+        <DialogContent className="max-h-[95vh] overflow-auto">
           <DialogHeader>
             <DialogTitle>Edit Status</DialogTitle>
           </DialogHeader>
@@ -117,6 +118,11 @@ const ComplaintStatusTable = () => {
                 <label className="block text-sm font-medium mb-1">Text Color</label>
                 <input type="color" {...register("textColor")} className="h-10 w-16 p-1 border rounded" />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Border Color</label>
+                <input type="color" {...register("borderColor")} className="h-10 w-16 p-1 border rounded" />
+              </div>
+              
             </div>
             <div className="text-center">
               <Badge
@@ -124,6 +130,8 @@ const ComplaintStatusTable = () => {
                 style={{
                   backgroundColor: watch("bgColor"),
                   color: watch("textColor"),
+                  borderColor: watch("borderColor"),
+                  border: "2px solid"
                 }}
               >
                 {editStatus?.adminLabel || ""}
