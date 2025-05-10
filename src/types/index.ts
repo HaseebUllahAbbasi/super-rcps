@@ -98,3 +98,12 @@ export type Image = {
   updatedAt: string
   imageTags: ImageTag[]
 }
+
+
+
+
+export interface JwtPayload{
+  id?:string,
+  role?:"citizen" |"admin"| "divisional_head" |"super_admin" |"director"
+  name?:string,
+}

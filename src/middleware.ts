@@ -1,19 +1,19 @@
-import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getCurrentUser } from "./apis/auth-apis"
+import { NextResponse } from "next/server"
+import { verifyJwtToken } from "./utils/helper"
 
 // Define which paths require authentication
-const protectedPaths = ["/dashboard", "/admins", "/divisions", "/statuses", "/profile", "/settings"] 
+const protectedPaths = ["/dashboard", "/admins", "/divisions", "/statuses", "/profile", "/settings"]
 
 // Define paths that should be accessible only to non-authenticated users
 const authPaths = ["/", "/register"]
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  // const admin_token = request.cookies.get("auth-token")?.value;
-  const {success:token}=await getCurrentUser();
+  const admin_token = request.cookies.get("auth-token")?.value;
+  const { success: token } = verifyJwtToken(admin_token || "");
 
-  
+
   // Check if the path is protected and user is not authenticated
   if (protectedPaths.some((path) => pathname.startsWith(path)) && !token) {
     const url = request.nextUrl.clone()
