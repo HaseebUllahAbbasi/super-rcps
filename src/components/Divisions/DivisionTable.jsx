@@ -85,7 +85,7 @@ const DivisionManagement = () => {
         <TableBody>
           {divisions?.map((division, index) => (
             <TableRow key={index}>
-              <TableCell>{index}</TableCell>
+              <TableCell>{index+1}</TableCell>
               <TableCell>{division?.originalName}</TableCell>
               <TableCell>{division?.divisionLabel}</TableCell>
               <TableCell>
