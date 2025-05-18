@@ -1,5 +1,5 @@
 "use client"
-import { Building, GalleryVertical, LayoutDashboard, LogOut, MapPin, Settings, Users } from "lucide-react"
+import { BadgeCheck, Building, GalleryVertical, LayoutDashboard, LogOut, MapPin, Settings, Users } from "lucide-react"
 
 import {
   Sidebar,
@@ -35,20 +35,20 @@ const items = [
     icon: Building, // Represents organizational divisions
   },
   {
-    title: "Statuses",
+    title: "Status Setting",
     url: "/statuses",
-    icon: MapPin, // Represents geographical locations
+    icon: BadgeCheck, // Represents geographical locations
   },
   {
     title: "Gallary",
     url: "/gallary",
     icon: GalleryVertical,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
+  // {
+  //   title: "Settings",
+  //   url: "#",
+  //   icon: Settings,
+  // },
   {
     title: "Logout",
     url: "/logout",
