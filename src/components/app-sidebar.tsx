@@ -1,5 +1,5 @@
 "use client"
-import { BadgeCheck, Building, GalleryVertical, LayoutDashboard, LogOut, MapPin, Settings, Users } from "lucide-react"
+import { BadgeCheck, Building, GalleryVertical, LayoutDashboard, LogOut, Users } from "lucide-react"
 
 import {
   Sidebar,
