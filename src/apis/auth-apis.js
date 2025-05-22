@@ -91,3 +91,13 @@ export const getCurrentUser=async()=>{
       return { error: error?.response, success: false, message: errorMessage, data: null }
     }
 }
+
+
+export const insertStaticSummaryService = async (summaryData) => {
+  try {
+    const response = await axios.post("/api/admins/add-static-summary", summaryData);
+    return { data: response.data };
+  } catch (error) {
+    return { error: error.response?.data?.message || "Failed to submit summary." };
+  }
+};

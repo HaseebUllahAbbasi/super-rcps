@@ -6,6 +6,8 @@ import AdminFilters from "@/components/admin/admin-filters"
 import AdminGridView from "@/components/admin/admin-grid-view"
 import AdminHeader from "@/components/admin/admin-header"
 import AdminListView from "@/components/admin/admin-list-view"
+import { DashboardSummaryModal } from "@/components/DashboardSummary/DashboardSummary"
+import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAdminStore } from "@/store/useAdminStore"
 import type { AdminUser, SortDirection, SortField } from "@/types"
@@ -22,6 +24,7 @@ export default function AdminManagement() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { fetchUsers, admins, error: fetchingError } = useAdminStore()
 
+  const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -102,6 +105,14 @@ export default function AdminManagement() {
     <div className="container mx-auto py-8 px-4   overflow-hidden">
       <p className="text-red-400 text-center">{fetchingError}</p>
       <Tabs defaultValue="list" className="w-full">
+
+
+
+      <DashboardSummaryModal open={summaryDialogOpen} onOpenChange={setSummaryDialogOpen} />
+      <div>
+      <Button className="w-fit mr-auto" onClick={() => setSummaryDialogOpen(true)}>Submit Dashboard Summary</Button>
+      </div>
+        <AddAdminDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} onAdd={handleAddAdmin} />
         <AdminHeader>
           <TabsList>
             <TabsTrigger value="list">List View</TabsTrigger>
@@ -136,7 +147,6 @@ export default function AdminManagement() {
         </TabsContent>
       </Tabs>
 
-      <AddAdminDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} onAdd={handleAddAdmin} />
     </div>
   )
 }
