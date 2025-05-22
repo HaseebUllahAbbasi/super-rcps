@@ -93,11 +93,22 @@ export const getCurrentUser=async()=>{
 }
 
 
-export const insertStaticSummaryService = async (summaryData) => {
+export const insertStaticSummaryService = async (summaryId,summaryData) => {
   try {
-    const response = await axios.post("/api/admins/add-static-summary", summaryData);
+    const response = await axiosInstance.post("/api/admins/add-static-summary", {...summaryData,id:summaryId});
     return { data: response.data };
   } catch (error) {
+    console.log({error})
     return { error: error.response?.data?.message || "Failed to submit summary." };
   }
 };
+
+// /apis/auth-apis.ts (or wherever your API calls live)
+export async function getStaticSummaryById(id) {
+  try {
+    const res = await axiosInstance.get(`/api/admins/get-static-summary-by-id/${id}`);
+    return { data:res.data?.data};
+  } catch (error) {
+    return { error: error.message || "Unknown error" };
+  }
+}

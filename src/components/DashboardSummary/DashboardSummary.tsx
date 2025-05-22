@@ -10,18 +10,20 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextInput } from "../TextField";
 import { dashboardSummarySchema } from "@/schemas/summarySchema";
-import { insertStaticSummaryService } from "@/apis/auth-apis";
+import { getStaticSummaryById, insertStaticSummaryService } from "@/apis/auth-apis";
 
 export const DashboardSummaryModal = ({ open, onOpenChange }: any) => {
+  const summaryId = 1
   const [loading, setLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
+    formState: { isSubmitting },
   } = useForm({
     resolver: zodResolver(dashboardSummarySchema),
     defaultValues: {
@@ -29,11 +31,7 @@ export const DashboardSummaryModal = ({ open, onOpenChange }: any) => {
       activeCases: 0,
       pendingCases: 0,
       completedCases: 0,
-      dogCounts: {
-        male: 0,
-        female: 0,
-        unidentified: 0,
-      },
+      dogCounts: { male: 0, female: 0, unidentified: 0 },
       tabsCounts: {
         newComplaintsCount: 0,
         inboxComplaintsCount: 0,
@@ -41,25 +39,36 @@ export const DashboardSummaryModal = ({ open, onOpenChange }: any) => {
         resolvedComplaintsCount: 0,
         rejectedComplaintsCount: 0,
       },
-      tnvrCounts: {
-        TRAPPED: 0,
-        NEUTERED: 0,
-        VACCINATED: 0,
-        RELEASED: 0,
-      },
+      tnvrCounts: { TRAPPED: 0, NEUTERED: 0, VACCINATED: 0, RELEASED: 0 },
     },
   });
 
+  useEffect(() => {
+    if (!open) return;
+    if (!summaryId) return; // or handle error
+
+    setLoading(true);
+    getStaticSummaryById(summaryId).then(({ data, error }) => {
+      console.log({data})
+      setLoading(false);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      // Populate form with fetched data
+      reset(data);
+    });
+  }, [open, summaryId, reset]);
+
   const onSubmit = async (data: any) => {
     setLoading(true);
-    const { error } = await insertStaticSummaryService(data);
+    const { error } = await insertStaticSummaryService(summaryId,data);
     setLoading(false);
     if (error) return toast.error(error);
     toast.success("Dashboard Summary Inserted");
     onOpenChange(false);
     reset();
   };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-scroll w-8/12">
@@ -159,6 +168,37 @@ export const DashboardSummaryModal = ({ open, onOpenChange }: any) => {
                 {...register("tabsCounts.rejectedComplaintsCount", { valueAsNumber: true })}
               />
             </div>
+            {/* TNVR Counts */}
+            <div>
+              <h4 className="font-medium text-lg">TNVR Counts</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <TextInput
+                  id="tnvrCounts.TRAPPED"
+                  label="Trapped"
+                  type="number"
+                  {...register("tnvrCounts.TRAPPED", { valueAsNumber: true })}
+                />
+                <TextInput
+                  id="tnvrCounts.NEUTERED"
+                  label="Neutered"
+                  type="number"
+                  {...register("tnvrCounts.NEUTERED", { valueAsNumber: true })}
+                />
+                <TextInput
+                  id="tnvrCounts.VACCINATED"
+                  label="Vaccinated"
+                  type="number"
+                  {...register("tnvrCounts.VACCINATED", { valueAsNumber: true })}
+                />
+                <TextInput
+                  id="tnvrCounts.RELEASED"
+                  label="Released"
+                  type="number"
+                  {...register("tnvrCounts.RELEASED", { valueAsNumber: true })}
+                />
+              </div>
+            </div>
+
           </div>
 
           <DialogFooter>

@@ -6,28 +6,13 @@ export const dashboardSummarySchema = z.object({
   activeCases: z.number(),
   pendingCases: z.number(),
   completedCases: z.number(),
-  divisionWise: z.array(
-    z.object({
-      divisionId: z.string(),
-      divisionName: z.string(),
-      total: z.number(),
-      active: z.number(),
-      pending: z.number(),
-      completed: z.number(),
-    })
-  ),
-  statusWiseCounts: z.array(
-    z.object({
-      statusId: z.number(),
-      statusName: z.string(),
-      count: z.number(),
-    })
-  ),
+
   dogCounts: z.object({
     male: z.number(),
     female: z.number(),
     unidentified: z.number(),
   }),
+
   tabsCounts: z.object({
     newComplaintsCount: z.number(),
     inboxComplaintsCount: z.number(),
@@ -35,7 +20,8 @@ export const dashboardSummarySchema = z.object({
     resolvedComplaintsCount: z.number(),
     rejectedComplaintsCount: z.number(),
   }),
-  tnvrCounts:z.object({
+
+  tnvrCounts: z.object({
     TRAPPED: z.number(),
     NEUTERED: z.number(),
     VACCINATED: z.number(),
