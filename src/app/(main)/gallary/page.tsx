@@ -521,7 +521,6 @@ function ImageEditForm({
   return (
     <form onSubmit={handleSave} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
-        {JSON.stringify(selectedTags, null, 2)}
         <div className="space-y-2">
           <Label htmlFor="edit-title">Title</Label>
           <Input
