@@ -17,6 +17,19 @@ import { LoadingScreen } from "../reuseable/loading";
 import { Badge } from "../ui/badge";
 import {tailwindToInlineStyle} from  "../../utils/helper"
 
+export function extractColorValues(tailwindString) {
+  const bgMatch = tailwindString.match(/!bg-\[#([0-9a-fA-F]{6})\]/);
+  const textMatch = tailwindString.match(/!text-\[#([0-9a-fA-F]{6})\]/);
+  const borderMatch = tailwindString.match(/!border-\[#([0-9a-fA-F]{6})\]/);
+
+  return {
+    bgColor: bgMatch ? `#${bgMatch[1]}` : "#ffffff",
+    textColor: textMatch ? `#${textMatch[1]}` : "#000000",
+    borderColor: borderMatch ? `#${borderMatch[1]}` : "#cccccc",
+  };
+}
+
+
 const statusSchema = z.object({
   statusLabel: z.string().min(1, "Status label is required"),
   citizenLabel: z.string().min(1, "Citizen label is required"),
@@ -34,10 +47,17 @@ const ComplaintStatusTable = () => {
     resolver: zodResolver(statusSchema),
   });
 
-  const handleEdit = (status) => {
-    setEditStatus(status);
-    reset(status);
-  };
+const handleEdit = (status) => {
+  const { bgColor, textColor, borderColor } = extractColorValues(status.colorStyles || "");
+  
+  setEditStatus(status);
+  reset({
+    ...status,
+    bgColor,
+    textColor,
+    borderColor,
+  });
+};
 
   const handleUpdate = async (updatedStatusInfo) => {
     setLoading(true);
@@ -130,7 +150,7 @@ const ComplaintStatusTable = () => {
             </div>
             <div className="text-center">
               <Badge
-                className="rounded-full mx-auto p-2 font-semibold mt-2 text-center"
+                className="rounded-full mx-auto p-2 border-2 font-semibold mt-2 text-center"
                 style={{
                   backgroundColor: watch("bgColor"),
                   color: watch("textColor"),
