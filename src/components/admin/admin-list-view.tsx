@@ -192,11 +192,15 @@ export default function AdminListView({
             )}
           </TableBody>
         </Table>
+
       </CardContent>
 
       {currentAdmin && (
         <EditAdminDialog
-          admin={currentAdmin}
+          admin={{
+            ...currentAdmin, 
+
+          }}
           open={isEditDialogOpen}
           onOpenChange={(open) => {
             setIsEditDialogOpen(open);

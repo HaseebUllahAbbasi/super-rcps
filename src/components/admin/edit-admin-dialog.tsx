@@ -16,7 +16,7 @@ import { addAdminSchema } from "@/schemas/user.schema"
 import { useAdminStore } from "@/store/useAdminStore"
 import { AdminUser, Division } from "@/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { TextInput } from "../TextField"
@@ -34,7 +34,9 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
+    watch
   } = useForm({
     resolver: yupResolver(addAdminSchema),
     defaultValues: { ...admin, cnic:formatCNIC(admin?.cnic), phone: formatPhoneNumber(admin?.phone) }
@@ -58,6 +60,9 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
     console.log(response)
     if (response.error) {
       return toast.error(response.error);
+
+      
+      
     };
     // console.log(addAdminToStore)
     // const updatedAdmin = await 
@@ -68,6 +73,19 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
     onOpenChange(false)
   };
 
+
+
+  useEffect(() => {
+   if(divisions) {
+     const filterDIvision = divisions.filter((division: Division) => division.divisionLabel === admin?.division)
+
+    if(filterDIvision?.length > 0) {
+      console.log(filterDIvision, filterDIvision[0].originalName)
+      setValue("division", filterDIvision[0].originalName)
+    }
+    
+   }
+  }, [divisions])
 
 
   return (
@@ -124,7 +142,7 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
                 })}/>
               <div className="items-center gap-4">
                 <Label htmlFor="division">Division</Label>
-                <Select defaultValue={admin?.division} onValueChange={(value) => setValue("division", value)}>
+<Select value={watch("division")} onValueChange={(value) => setValue("division", value)}>
                   <SelectTrigger className="col-span-3 w-full">
                     <SelectValue placeholder="Select division" />
                   </SelectTrigger>
