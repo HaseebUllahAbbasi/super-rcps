@@ -15,6 +15,14 @@ export const tailwindToInlineStyle = (classString: string): React.CSSProperties 
         const color = cls.match(/!text-\[(.+?)\]/)?.[1];
         if (color) style.color = color;
       }
+
+       if (cls.startsWith('!border-[')) {
+        const color = cls.match(/!text-\[(.+?)\]/)?.[1];
+        if (color) {
+           style.borderColor = color;
+            style.borderWidth = '2px';
+        }
+      }
   
       // Add more cases here if needed
     });
