@@ -79,7 +79,7 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
      const filterDIvision = divisions.filter((division: Division) => division.divisionLabel === admin?.division)
 
     if(filterDIvision?.length > 0) {
-      console.log(filterDIvision)
+      console.log(filterDIvision, filterDIvision[0].originalName)
       setValue("division", filterDIvision[0].originalName)
     }
     
