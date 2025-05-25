@@ -34,7 +34,6 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
     register,
     handleSubmit,
     setValue,
-    getValues,
     formState: { errors },
     watch
   } = useForm({
