@@ -36,6 +36,7 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
     setValue,
     getValues,
     formState: { errors },
+    watch
   } = useForm({
     resolver: yupResolver(addAdminSchema),
     defaultValues: { ...admin, cnic:formatCNIC(admin?.cnic), phone: formatPhoneNumber(admin?.phone) }
@@ -95,7 +96,6 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
           <DialogDescription>Update administrator details and permissions.</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-140px)] ">
-          {JSON.stringify(getValues("division"))}
           <form onSubmit={handleSubmit(onSubmit)} className="p-2">
             <div className="grid gap-4 py-4">
               <TextInput id="name" error={errors.name?.message || ""} placeholder="Enter full name" label={"Name"} {...register("name")} />
@@ -142,7 +142,7 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
                 })}/>
               <div className="items-center gap-4">
                 <Label htmlFor="division">Division</Label>
-                <Select defaultValue={admin?.division} onValueChange={(value) => setValue("division", value)}>
+<Select value={watch("division")} onValueChange={(value) => setValue("division", value)}>
                   <SelectTrigger className="col-span-3 w-full">
                     <SelectValue placeholder="Select division" />
                   </SelectTrigger>
