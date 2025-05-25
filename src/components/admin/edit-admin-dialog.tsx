@@ -16,7 +16,7 @@ import { addAdminSchema } from "@/schemas/user.schema"
 import { useAdminStore } from "@/store/useAdminStore"
 import { AdminUser, Division } from "@/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { TextInput } from "../TextField"
@@ -34,6 +34,7 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(addAdminSchema),
@@ -58,6 +59,9 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
     console.log(response)
     if (response.error) {
       return toast.error(response.error);
+
+      
+      
     };
     // console.log(addAdminToStore)
     // const updatedAdmin = await 
@@ -70,6 +74,19 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
 
 
 
+  useEffect(() => {
+   if(divisions) {
+     const filterDIvision = divisions.filter((division: Division) => division.divisionLabel === admin?.division)
+
+    if(filterDIvision?.length > 0) {
+      console.log(filterDIvision)
+      setValue("division", filterDIvision[0].originalName)
+    }
+    
+   }
+  }, [divisions])
+
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
@@ -78,6 +95,7 @@ export default function EditAdminDialog({ admin, open, onOpenChange, }: EditAdmi
           <DialogDescription>Update administrator details and permissions.</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-140px)] ">
+          {JSON.stringify(getValues("division"))}
           <form onSubmit={handleSubmit(onSubmit)} className="p-2">
             <div className="grid gap-4 py-4">
               <TextInput id="name" error={errors.name?.message || ""} placeholder="Enter full name" label={"Name"} {...register("name")} />
