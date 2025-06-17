@@ -9,6 +9,7 @@ const useAdminStore = create(
       admins: [],
       statuses: [], // statuses array
       divisions: [],
+      urgencyLevels: [],
       loading: false,
       error: null,
 
@@ -57,6 +58,13 @@ const useAdminStore = create(
         set((state) => ({
           statuses: state.statuses.map((status) =>
             status?.id === updatedStatus?.id ? updatedStatus : status
+          ),
+        }));
+      },
+       updateUrgencyLevel: (updatedStatus) => {
+        set((state) => ({
+          urgencyLevels: state.urgencyLevels.map((urgency) =>
+            urgency?.id === updatedStatus?.id ? updatedStatus : urgency
           ),
         }));
       },

@@ -1,21 +1,19 @@
 "use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Edit } from "lucide-react";
-import { z } from "zod";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextInput } from "../TextField";
-import { updateStatusLabelByAdmin } from "../../apis/auth-apis";
+import { Edit } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
+import { updateStatusLabelByAdmin } from "../../apis/auth-apis";
 import { useAdminStore } from "../../store/useAdminStore";
-import { useEffect } from "react";
+import { tailwindToInlineStyle } from "../../utils/helper";
 import { LoadingScreen } from "../reuseable/loading";
+import { TextInput } from "../TextField";
 import { Badge } from "../ui/badge";
-import {tailwindToInlineStyle} from  "../../utils/helper"
 
 export function extractColorValues(tailwindString) {
   const bgMatch = tailwindString.match(/!bg-\[#([0-9a-fA-F]{6})\]/);
