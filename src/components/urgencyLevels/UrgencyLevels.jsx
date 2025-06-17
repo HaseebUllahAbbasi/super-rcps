@@ -25,6 +25,10 @@ const urgencySchema = z.object({
     bgColor: z.string().min(1),
     textColor: z.string().min(1),
     borderColor: z.string().min(1),
+    urgencyWait: z
+        .union([z.string(), z.number()])
+        .transform((val) => Number(val))
+        .refine((val) => !isNaN(val), { message: "Urgency wait must be a number" }),
 });
 
 export const UrgencyLevelsTable = () => {
@@ -49,6 +53,7 @@ export const UrgencyLevelsTable = () => {
             bgColor,
             textColor,
             borderColor,
+            urgencyWait: urgency?.urgencyWait || 0,
         });
     };
 
@@ -56,6 +61,7 @@ export const UrgencyLevelsTable = () => {
         setLoading(true);
         const payload = {
             ...data,
+            urgencyWait: data?.urgencyWait?.toString(),
             colorStyles: `!bg-[${data.bgColor}] !text-[${data.textColor}] !border-[${data.borderColor}]`,
         };
 
@@ -67,7 +73,7 @@ export const UrgencyLevelsTable = () => {
         setLoading(false);
 
         if (error) return toast.error(error);
-        console.log({updated})
+        console.log({ updated })
         updateUrgencyLevel(updated?.urgencyLevel);
         toast.success("Urgency level updated successfully");
         setEditUrgency(null);
@@ -88,6 +94,7 @@ export const UrgencyLevelsTable = () => {
                         <TableHead>Citizen Label</TableHead>
                         <TableHead>Admin Label</TableHead>
                         <TableHead>Preview</TableHead>
+                        <TableHead>Urgency Wait</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -106,6 +113,7 @@ export const UrgencyLevelsTable = () => {
                                     {urgency.adminLabel}
                                 </Badge>
                             </TableCell>
+                            <TableCell>{urgency?.urgencyWait}</TableCell>
                             <TableCell>
                                 <Button size="icon" variant="ghost" onClick={() => handleEdit(urgency)}>
                                     <Edit size={16} />
@@ -126,6 +134,10 @@ export const UrgencyLevelsTable = () => {
                         <div className="space-y-4">
                             <TextInput {...register("citizenLabel")} label="Citizen Label" />
                             <TextInput {...register("adminLabel")} label="Admin Label" />
+                            <div>
+                                <TextInput {...register("urgencyWait")} label="Urgency Wait (e.g. 1, 2, 3)" type="number" />
+                            </div>
+
 
                             <div>
                                 <label className="text-sm font-medium mb-1 block">Background Color</label>
