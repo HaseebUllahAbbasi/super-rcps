@@ -72,6 +72,16 @@ export const updateUrgencyLevelByAdmin=async(statusId,updatedInfo)=>{
   }
 }
 
+export const addNewUrgencyLevelByAdmin =async(urgencyLevelInfo)=>{
+  try {
+    const response = await axiosInstance.post(`/api/admins/add-urgencylevel`,urgencyLevelInfo);
+    return { data: response.data?.data, error: "" };
+  } catch (err) {
+    console.log(err)
+    return { data: null, error: err?.response?.data.message || "Errror while adding new admin please try again" };
+  }
+}
+
 export const addNewDivision=async(divisionInfo)=>{
   try {
     const response = await axiosInstance.post("/api/admins/add-division",divisionInfo);

@@ -13,13 +13,14 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 
-import { updateUrgencyLevelByAdmin } from "@/apis/auth-apis";
+import { addNewUrgencyLevelByAdmin, updateUrgencyLevelByAdmin } from "@/apis/auth-apis";
 import { useAdminStore } from "@/store/useAdminStore";
 import { tailwindToInlineStyle } from "@/utils/helper";
 import { extractColorValues } from "../status/StatusesTable"; // reuse the function
 
 
 const urgencySchema = z.object({
+    originalName: z.string().optional(), // only required in Add
     citizenLabel: z.string().min(1, "Citizen label is required"),
     adminLabel: z.string().min(1, "Admin label is required"),
     bgColor: z.string().min(1),
@@ -31,11 +32,24 @@ const urgencySchema = z.object({
         .refine((val) => !isNaN(val), { message: "Urgency wait must be a number" }),
 });
 
+// Initialize defualt values
+const defaultUrgencyValues = {
+    citizenLabel: "",
+    adminLabel: "",
+    bgColor: "#000000",
+    textColor: "#ffffff",
+    borderColor: "#000000",
+    urgencyWait: 0,
+};
+
+
 export const UrgencyLevelsTable = () => {
 
-    const { fetchUsers, loading: adminLoading, urgencyLevels, updateUrgencyLevel } = useAdminStore();
+    const { fetchUsers, loading: adminLoading, urgencyLevels, updateUrgencyLevel, addUrgencyLevel } = useAdminStore();
     const [editUrgency, setEditUrgency] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isAddOpen, setIsAddOpen] = useState(false);
+
 
     const { register, handleSubmit, reset, watch } = useForm({
         resolver: zodResolver(urgencySchema),
@@ -57,6 +71,7 @@ export const UrgencyLevelsTable = () => {
         });
     };
 
+    // handle Edit
     const handleUpdate = async (data) => {
         setLoading(true);
         const payload = {
@@ -79,13 +94,50 @@ export const UrgencyLevelsTable = () => {
         setEditUrgency(null);
     };
 
+    // handle add new 
+    const onSubmitAdd = async (data) => {
+        setLoading(true);
+        const payload = {
+            ...data,
+            urgencyWait: data?.urgencyWait?.toString(),
+            colorStyles: `!bg-[${data.bgColor}] !text-[${data.textColor}] !border-[${data.borderColor}]`,
+        };
+
+        delete payload.bgColor;
+        delete payload.textColor;
+        delete payload.borderColor;
+
+        try {
+            const { data: newLevel, error } = await addNewUrgencyLevelByAdmin(payload); // or createUrgencyLevel
+            if (error) return toast.error(error);
+
+            addUrgencyLevel(newLevel?.urgencyLevel); // Append it
+            toast.success("Urgency level added");
+            setIsAddOpen(false);
+        } catch (err) {
+            toast.error("Failed to add urgency level");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     if (!urgencyLevels) {
         return <LoadingScreen fullScreen={true} text="Loading..." />;
     }
 
     return (
         <div>
-            <h2 className="text-xl font-semibold mb-4">Urgency Levels</h2>
+            <div className="flex justify-between mb-4">
+                <h2 className="text-xl font-semibold mb-4">Urgency Levels</h2>
+                <Button onClick={() => {
+                    reset(defaultUrgencyValues);
+                    setIsAddOpen(true);
+                }} className="mb-4">
+                    + Add New Urgency Level
+                </Button>
+
+            </div>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -174,6 +226,55 @@ export const UrgencyLevelsTable = () => {
                     </form>
                 </DialogContent>
             </Dialog>
+
+
+            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add New Urgency Level</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit(onSubmitAdd)}>
+                        <div className="space-y-4">
+                            <TextInput {...register("originalName")} label="Original Name" />
+                            <TextInput {...register("citizenLabel")} label="Citizen Label" />
+                            <TextInput {...register("adminLabel")} label="Admin Label" />
+                            <TextInput {...register("urgencyWait")} label="Urgency Wait" type="number" />
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Background Color</label>
+                                <input type="color" {...register("bgColor")} className="h-10 w-16 p-1 border rounded" />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Text Color</label>
+                                <input type="color" {...register("textColor")} className="h-10 w-16 p-1 border rounded" />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Border Color</label>
+                                <input type="color" {...register("borderColor")} className="h-10 w-16 p-1 border rounded" />
+                            </div>
+                            <div className="text-center mt-4">
+                                <Badge
+                                    className="rounded-full p-2 border-2 font-semibold"
+                                    style={{
+                                        backgroundColor: watch("bgColor"),
+                                        color: watch("textColor"),
+                                        borderColor: watch("borderColor"),
+                                        borderWidth: "2px",
+                                    }}
+                                >
+                                    {watch("adminLabel") || "Preview"}
+                                </Badge>
+                            </div>
+                        </div>
+                        <DialogFooter className="mt-4">
+                            <Button type="submit" loading={loading}>
+                                Save
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+
         </div>
     );
 };

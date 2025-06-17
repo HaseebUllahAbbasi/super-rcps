@@ -79,6 +79,10 @@ const useAdminStore = create(
         set((state) => ({
           divisions: [...state.divisions, newDivision],
         })),
+      addUrgencyLevel: (newUrgencyLevel) =>
+        set((state) => ({
+          urgencyLevels: [...state.urgencyLevels, newUrgencyLevel],
+        })),
     }),
     {
       name: 'users-storage', // Key for localStorage persistence
