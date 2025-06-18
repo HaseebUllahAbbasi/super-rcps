@@ -235,10 +235,10 @@ export const UrgencyLevelsTable = () => {
                     </DialogHeader>
                     <form onSubmit={handleSubmit(onSubmitAdd)}>
                         <div className="space-y-4">
-                            <TextInput {...register("originalName")} label="Original Name" />
-                            <TextInput {...register("citizenLabel")} label="Citizen Label" />
-                            <TextInput {...register("adminLabel")} label="Admin Label" />
-                            <TextInput {...register("urgencyWait")} label="Urgency Wait" type="number" />
+                            <TextInput {...register("originalName")} label="Original Name" placeholder="e.g. Urgent"  />
+                            <TextInput {...register("citizenLabel")} label="Citizen Label" placeholder="e.g. Requires Immediate Action"  />
+                            <TextInput {...register("adminLabel")} label="Admin Label" placeholder="e.g. Requires Immediate Action"  />
+                            <TextInput {...register("urgencyWait")} label="Urgency Wait" type="number" placeholder="e.g. 2" />
                             <div>
                                 <label className="text-sm font-medium mb-1 block">Background Color</label>
                                 <input type="color" {...register("bgColor")} className="h-10 w-16 p-1 border rounded" />
