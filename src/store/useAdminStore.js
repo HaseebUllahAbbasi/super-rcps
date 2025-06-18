@@ -9,6 +9,7 @@ const useAdminStore = create(
       admins: [],
       statuses: [], // statuses array
       divisions: [],
+      urgencyLevels: [],
       loading: false,
       error: null,
 
@@ -60,6 +61,13 @@ const useAdminStore = create(
           ),
         }));
       },
+       updateUrgencyLevel: (updatedStatus) => {
+        set((state) => ({
+          urgencyLevels: state.urgencyLevels.map((urgency) =>
+            urgency?.id === updatedStatus?.id ? updatedStatus : urgency
+          ),
+        }));
+      },
       updateDivision: (updatedDivision) =>
         set((state) => ({
           divisions: state.divisions.map((div) =>
@@ -70,6 +78,10 @@ const useAdminStore = create(
       addDivision: (newDivision) =>
         set((state) => ({
           divisions: [...state.divisions, newDivision],
+        })),
+      addUrgencyLevel: (newUrgencyLevel) =>
+        set((state) => ({
+          urgencyLevels: [...state.urgencyLevels, newUrgencyLevel],
         })),
     }),
     {

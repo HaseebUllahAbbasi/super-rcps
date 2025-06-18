@@ -35,8 +35,13 @@ const items = [
     icon: Building, // Represents organizational divisions
   },
   {
-    title: "Status Setting",
+    title: "Status Settings",
     url: "/statuses",
+    icon: BadgeCheck, // Represents geographical locations
+  },
+  {
+    title: "Urgency Settings",
+    url: "/urgency-levels",
     icon: BadgeCheck, // Represents geographical locations
   },
   {
@@ -44,11 +49,6 @@ const items = [
     url: "/gallary",
     icon: GalleryVertical,
   },
-  // {
-  //   title: "Settings",
-  //   url: "#",
-  //   icon: Settings,
-  // },
   {
     title: "Logout",
     url: "/logout",
