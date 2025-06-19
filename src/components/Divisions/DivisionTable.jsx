@@ -4,12 +4,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAdminStore } from "@/store/useAdminStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, LoaderPinwheel, Plus } from "lucide-react";
+import { Edit, LoaderPinwheel, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { addNewDivision, updateDivisionById } from "../../apis/auth-apis";
+import { addNewDivision, deleteDivisionById, fetchDivisionDetails, updateDivisionById } from "../../apis/auth-apis";
 import { TextInput } from "../TextField";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { LoadingScreen } from "../reuseable/loading";
@@ -20,10 +20,16 @@ const divisionSchema = z.object({
 });
 
 const DivisionManagement = () => {
-  const { fetchUsers, divisions, updateDivision, addDivision,loading: adminLoading  } = useAdminStore();
+  const { fetchUsers, divisions, updateDivision, addDivision, removeDivision, loading: adminLoading } = useAdminStore();
   const [editDivision, setEditDivision] = useState(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [divisionToDelete, setDivisionToDelete] = useState(null);
+  const [deleteDetails, setDeleteDetails] = useState(null);
+  const [moveToDivisionId, setMoveToDivisionId] = useState("");
+
 
   const { register, handleSubmit, reset } = useForm({
     resolver: zodResolver(divisionSchema),
@@ -35,9 +41,9 @@ const DivisionManagement = () => {
   };
 
 
-    useEffect(() => {
-      fetchUsers();
-    }, [fetchUsers]);
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleUpdate = async (updatedDivisionInfo) => {
     setLoading(true);
@@ -60,10 +66,18 @@ const DivisionManagement = () => {
     reset();
   };
 
-  if(adminLoading) {
+  const handleDelete = async (division) => {
+    setDeleteDialogOpen(true);
+    setDivisionToDelete(division);
+    const { data } = await fetchDivisionDetails(division.id); // API call
+    setDeleteDetails(data?.division);
+  };
+
+
+  if (adminLoading) {
     return <LoadingScreen fullScreen={true} text="Loading..." />;
   }
-  
+
   return (
     <div>
       {/* Table */}
@@ -85,13 +99,17 @@ const DivisionManagement = () => {
         <TableBody>
           {divisions?.map((division, index) => (
             <TableRow key={index}>
-              <TableCell>{index+1}</TableCell>
+              <TableCell>{index + 1}</TableCell>
               <TableCell>{division?.originalName}</TableCell>
               <TableCell>{division?.divisionLabel}</TableCell>
               <TableCell>
                 <Button size="icon" variant="ghost" onClick={() => handleEdit(division)}>
                   <Edit size={16} />
                 </Button>
+                <Button size="icon" variant="ghost" onClick={() => handleDelete(division)}>
+                  <Trash />
+                </Button>
+
               </TableCell>
             </TableRow>
           ))}
@@ -140,7 +158,7 @@ const DivisionManagement = () => {
                     .toLowerCase(); // Replace spaces with underscores
                 }}
               />
-              <TextInput {...register("divisionLabel")}   placeholder="Enter the display name for the division" label="Division Label" className="mt-3" />
+              <TextInput {...register("divisionLabel")} placeholder="Enter the display name for the division" label="Division Label" className="mt-3" />
             </div>
             <DialogFooter className="mt-4">
               <Button type="submit" loading={loading}>
@@ -150,6 +168,62 @@ const DivisionManagement = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Division</DialogTitle>
+            <DialogDescription>
+              You're about to delete <strong>{deleteDetails?.divisionLabel}</strong>.
+              This division has <strong>{deleteDetails?.complaintsCount}</strong> complaints
+              and <strong>{deleteDetails?.usersCount}</strong> users.
+              Please select another division to move the complaints and users before deletion.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-2">
+            <label className="block text-sm font-medium">Move data to:</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={moveToDivisionId}
+              onChange={(e) => setMoveToDivisionId(e.target.value)}
+            >
+              <option value="">-- Select Division --</option>
+              {divisions
+                .filter((d) => d.id !== divisionToDelete?.id)
+                .map((div) => (
+                  <option key={div.id} value={div.id}>
+                    {div.divisionLabel}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <DialogFooter className="mt-4">
+            <Button
+              variant="destructive"
+              disabled={!moveToDivisionId}
+              onClick={async () => {
+                setLoading(true);
+                const { error } = await deleteDivisionById(divisionToDelete?.id, moveToDivisionId);
+                setLoading(false);
+                if (error) return toast.error(error);
+                toast.success("Division deleted successfully");
+                removeDivision(divisionToDelete?.id) // remove division from store
+                setDeleteDialogOpen(false);
+                setDivisionToDelete(null);
+                setMoveToDivisionId("");
+              }}
+            >
+              {loading ? <LoaderPinwheel className="animate-spin w-4 h-4 mr-2" /> : null}
+              Confirm Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
     </div>
   );
 };
