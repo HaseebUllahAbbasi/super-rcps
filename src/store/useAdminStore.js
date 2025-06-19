@@ -74,6 +74,10 @@ const useAdminStore = create(
             div.id === updatedDivision.id ? updatedDivision : div
           ),
         })),
+      removeDivision: (id) =>
+        set((state) => ({
+          divisions: state.divisions?.filter((div) =>div?.id!==id),
+        })),
     
       addDivision: (newDivision) =>
         set((state) => ({
